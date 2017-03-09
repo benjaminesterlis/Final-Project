@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+#include <math.h>
 
 //File open mode
 #define SP_LOGGER_OPEN_MODE "w"
@@ -14,16 +16,21 @@
 #define LOG_LINE "- line: "
 #define LOG_MSG "- message: "
 
-#define _WRITE_FILE(log, file, function, line, msg) do {
-	if(fprintf(logger.outputChannel, "%s\n", log) < 0) \
+#define _WRITE_FILE(log_type, file, function, line, msg) do {
+	if(fprintf(logger.outputChannel, "%s\n", log_type) < 
+											strlen(log_type) +1 ) \
 		return SP_LOGGER_WRITE_FAIL; \
-	if(fprintf(logger.outputChannel, "%s\n", LOG_FILE file) < 0) \
+	if(fprintf(logger.outputChannel, "%s\n", LOG_FILE file) < 
+											strlen(LOG_FILE file) +1 ) \
 		return SP_LOGGER_WRITE_FAIL; \
-	if(fprintf(logger.outputChannel, "%s\n", LOG_FUNC function)) < 0) \
+	if(fprintf(logger.outputChannel, "%s\n", LOG_FUNC function)) <
+											strlen(LOG_FUNC function) +1) \
 		return SP_LOGGER_WRITE_FAIL; \
-	if(fprintf(logger.outputChannel, "%s%d\n", LOG_LINE, line) < 0) \
+	if(fprintf(logger.outputChannel, "%s%d\n", LOG_LINE, line) < 
+											strlen(LOG_LINE) + (int)log(line) +1) \
 		return SP_LOGGER_WRITE_FAIL; \
-	if(fprintf(logger.outputChannel, "%s\n", LOG_MSG msg) < 0) \
+	if(fprintf(logger.outputChannel, "%s\n", LOG_MSG msg) <
+											strlen(LOG_MSG msg) +1) \
 		return SP_LOGGER_WRITE_FAIL;
 } while(0)
 // Global variable holding the logger
