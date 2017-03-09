@@ -40,7 +40,8 @@ typedef enum sp_logger_msg_t {
 	SP_LOGGER_UNDIFINED,
 	SP_LOGGER_DEFINED,
 	SP_LOGGER_WRITE_FAIL,
-	SP_LOGGER_SUCCESS
+	SP_LOGGER_SUCCESS,
+	SP_LOGGER_WRONG_LEVEL
 } SP_LOGGER_MSG;
 
 /** A type used for defining the logger**/

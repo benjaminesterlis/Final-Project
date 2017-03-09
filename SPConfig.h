@@ -170,4 +170,14 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
  */
 void spConfigDestroy(SPConfig config);
 
+/**
+ * this function get two strings ($var, $val) and set
+ * SPConfig.$var = $val
+ * @retrun
+ * - SP_CONFIG_INVALID_INTEGER - in case type of $var is int and $val is string
+ * - SP_CONFIG_INVALID_STRING - in case there is no such field name $var in SPConfig
+ * - SP_CONDIF_SUCCEES - otherwise
+ */
+SP_CONFIG_MSG* add_filed_to_struct(char* var, char* val)
+
 #endif /* SPCONFIG_H_ */
