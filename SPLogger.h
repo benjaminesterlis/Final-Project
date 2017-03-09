@@ -35,7 +35,7 @@ typedef enum sp_logger_level_t {
 /** A type used to indicate errors in function calls **/
 typedef enum sp_logger_msg_t {
 	SP_LOGGER_CANNOT_OPEN_FILE,
-	SP_LOGGER_INVAlID_ARGUMENT,
+	SP_LOGGER_INVALID_ARGUMENT,
 	SP_LOGGER_OUT_OF_MEMORY,
 	SP_LOGGER_UNDIFINED,
 	SP_LOGGER_DEFINED,
@@ -213,5 +213,8 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
  * SP_LOGGER_SUCCESS			- otherwise
  */
 SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
+
+SP_LOGGER_MSG WRITE_FILE(const char *log_type, const char *file, 
+						const char *function, int line, const char *msg);
 
 #endif
