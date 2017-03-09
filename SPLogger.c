@@ -15,7 +15,6 @@
 #define LOG_FUNC "- function: "
 #define LOG_LINE "- line: "
 #define LOG_MSG "- message: "
-
 // Global variable holding the logger
 SPLogger logger = NULL;
 

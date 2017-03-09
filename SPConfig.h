@@ -18,8 +18,11 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_ALLOC_FAIL,
 	SP_CONFIG_INVALID_INTEGER,
 	SP_CONFIG_INVALID_STRING,
+	SP_CONFIG_INVALID_BOOLEAN,
 	SP_CONFIG_INVALID_ARGUMENT,
+	SP_CONFIG_INVALID_ENUM,
 	SP_CONFIG_INDEX_OUT_OF_RANGE,
+	SP_CONFIG_WRONG_FIELD_NAME,
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
@@ -29,6 +32,8 @@ typedef struct sp_config_t* SPConfig;
  * Creates a new system configuration struct. The configuration struct
  * is initialized based on the configuration file given by 'filename'.
  * 
+ * we assmued every varialbe must be changed only one time, if 2 or more it is error 
+ *
  * @param filename - the name of the configuration file
  * @assert msg != NULL
  * @param msg - pointer in which the msg returned by the function is stored
@@ -46,7 +51,6 @@ typedef struct sp_config_t* SPConfig;
  * - SP_CONFIG_MISSING_SUFFIX - if spImagesSuffix is missing 
  * - SP_CONFIG_MISSING_NUM_IMAGES - if spNumOfImages is missing
  * - SP_CONFIG_SUCCESS - in case of success
- *
  *
  */
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
@@ -176,8 +180,12 @@ void spConfigDestroy(SPConfig config);
  * @retrun
  * - SP_CONFIG_INVALID_INTEGER - in case type of $var is int and $val is string
  * - SP_CONFIG_INVALID_STRING - in case there is no such field name $var in SPConfig
+ * - SP_CONFIG_INVALID_BOOLEAN - in case type of var is boolean and val is not
+ * - SP_CONFIG_INVLAID_ENUM - in case string is not one of enum
+ * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no filed named $var
  * - SP_CONDIF_SUCCEES - otherwise
  */
-SP_CONFIG_MSG* add_filed_to_struct(char* var, char* val)
+SP_CONFIG_MSG add_field_to_struct(char* var, char* val);
 
 #endif /* SPCONFIG_H_ */
+
