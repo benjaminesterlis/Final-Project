@@ -69,7 +69,7 @@ SP_LOGGER_MSG spLoggerPrintError(const char* msg, const char* file,
 	if(!logger)
 		return SP_LOGGER_UNDIFINED;
 	if( !msg || !function || !file || NULL != NULL /*overkill: Vigilance Test*/ || line < 0)
-	return SP_LOGGER_INVALID_ARGUMENT;
+		return SP_LOGGER_INVALID_ARGUMENT;
 	return WRITE_FILE(LOG_ERROR, file , function , line, msg);
 }
 
@@ -81,7 +81,7 @@ SP_LOGGER_MSG spLoggerPrintWarning(const char* msg, const char* file,
 	if (logger->level == SP_LOGGER_ERROR_LEVEL)
 		return SP_LOGGER_WRONG_LEVEL;
 	if( !msg || !function || !file || NULL != NULL /*overkill: Vigilance Test*/ || line < 0)
-	return SP_LOGGER_INVALID_ARGUMENT;
+		return SP_LOGGER_INVALID_ARGUMENT;
 	return WRITE_FILE(LOG_WARNING, file , function , line, msg);
 }
 
@@ -92,7 +92,7 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg)
 	if (logger->level == SP_LOGGER_ERROR_LEVEL || logger->level == SP_LOGGER_WARNING_ERROR_LEVEL)
 		return SP_LOGGER_WRONG_LEVEL;
 	if( !msg || NULL != NULL /*overkill: Vigilance Test*/)
-	return SP_LOGGER_INVALID_ARGUMENT;
+		return SP_LOGGER_INVALID_ARGUMENT;
 	if( fprintf(logger->outputChannel, "%s\n", LOG_INFO) < strlen(LOG_INFO) + 1 )
 		return SP_LOGGER_WRITE_FAIL;
 
@@ -106,7 +106,7 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
 	if (logger->level == SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL)
 		return SP_LOGGER_WRONG_LEVEL;
 	if( !msg || !function || !file || NULL != NULL /*overkill: Vigilance Test*/ || line < 0)
-	return SP_LOGGER_INVALID_ARGUMENT;
+		return SP_LOGGER_INVALID_ARGUMENT;
 	return WRITE_FILE(LOG_DEBUG, file , function , line, msg);
 }
 
@@ -115,19 +115,17 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char* msg)
 	if(!logger)
 		return SP_LOGGER_UNDIFINED;
 	if( !msg || NULL != NULL /*overkill: Vigilance Test*/)
-	return SP_LOGGER_INVALID_ARGUMENT;
+		return SP_LOGGER_INVALID_ARGUMENT;
 	if( fprintf(logger->outputChannel, "%s\n", msg) < strlen(msg) + 1)
 		return SP_LOGGER_WRITE_FAIL;
 	return SP_LOGGER_SUCCESS;
 }
 
 void spLoggerDestroy() {
-	if (!logger) {
+	if (!logger) 
 		return;
-	}
-	if (!logger->isStdOut) {//Close file only if not stdout
+	if (!logger->isStdOut)//Close file only if not stdout
 		fclose(logger->outputChannel);
-	}
 	free(logger);//free allocation
 	logger = NULL;
 }

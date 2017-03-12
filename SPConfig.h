@@ -23,6 +23,7 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_INVALID_ENUM,
 	SP_CONFIG_INDEX_OUT_OF_RANGE,
 	SP_CONFIG_WRONG_FIELD_NAME,
+	SP_CONFIG_DOUBLE_USED_VAR,
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
@@ -50,6 +51,10 @@ typedef struct sp_config_t* SPConfig;
  * - SP_CONFIG_MISSING_PREFIX - if spImagesPrefix is missing
  * - SP_CONFIG_MISSING_SUFFIX - if spImagesSuffix is missing 
  * - SP_CONFIG_MISSING_NUM_IMAGES - if spNumOfImages is missing
+ * - SP_CONFIG_INVALID_BOOLEAN - if type of var is boolean and entered non-boolean value
+ * - SP_CONFIG_INVALID_ENUM - in case no such filed named * in enum
+ * - SP_CONFIG_WRONG_FIELD_NAME - if no such filed name as entered name
+ * - SP_CONFIG_DOUBLE_USED_VAR - if one varialbe updated twice
  * - SP_CONFIG_SUCCESS - in case of success
  *
  */
@@ -185,7 +190,6 @@ void spConfigDestroy(SPConfig config);
  * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no filed named $var
  * - SP_CONDIF_SUCCEES - otherwise
  */
-SP_CONFIG_MSG add_field_to_struct(char* var, char* val);
+SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n);
 
 #endif /* SPCONFIG_H_ */
-
