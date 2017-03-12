@@ -117,8 +117,8 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	conf->spLoggerLevel = 3;
 	conf->spLoggerFilename = "stdout";
 
-	while ((read = getc(fp)) != EOF){
-		
+	while ((read = getc(fp)) != EOF)
+	{
 		// for empty lines
 		if(read == EOL)
 			continue;
@@ -159,10 +159,9 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		}
 		
 		SKIP_WHITESPACES;
-
 		i = 0;
 		//assumed cant be comments after a variable data
-		// b3cu453 f0ld3r/f1l3n4m3 c4n c0nt41n # 1n 17   
+		// b3cu453 f0ld3r/f1l3n4m3 c4n c0nt41n # 1n 17
 		//#w3_4r3_1337
 		whlie (read != 32/*' '*/ || read != EOL || read != EOF)
 		{
