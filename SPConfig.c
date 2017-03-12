@@ -6,10 +6,10 @@
 #define EOL '\n'
 #endif
 
-#define SKIP_WHITESPACES { \
-	while(read == 32/*' '*/) \
-		read = getc(fp); \
-}
+#define SKIP_WHITESPACES  do { \
+		while(read == 32/*' '*/) \
+			read = getc(fp); \
+	} while(0)
 #define O_RONLY "r"
 #define	SP_DIR "spImagesDirectory"
 #define	SP_PRE "spImagesPrefix"
@@ -60,7 +60,7 @@ SPConfig conf;
  * - cell value is 0 if not changed
  * - every time we changed each varilabe we increment the corresponded cell
 */
-int corr_field_cell[4]={0,0,0,0};
+int corr_field_cell[4]={0};
 /**
  * Fit SP_CONFIG_MSG error to his cell
 */
@@ -78,19 +78,19 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	
 	if ( filename == NULL)
 	{
-		msg = &SP_CONFIG_INVALID_ARGUMENT;
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
 		return NULL;
 	}
 
 	if ((fp = fopen(filename, O_RONLY))  < 0 )
 	{
-		msg = &SP_CONFIG_CANNOT_OPEN_FILE;
+		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
 		return NULL;
 	}
 	
 	if((conf = (SPConfig)malloc(sizeof(SPConfig))) == NULL){
 		close(fp);
-		msg = &SP_CONFIG_ALLOC_FAIL;
+		*msg = SP_CONFIG_ALLOC_FAIL;
 		return NULL;
 	}
 
@@ -132,7 +132,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 			else
 			{
 				close(fp);
-				msg = &SP_CONFIG_INVALID_STRING;
+				*msg = SP_CONFIG_INVALID_STRING;
 				return NULL;
 			}
 		}
@@ -142,7 +142,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		if ( read != 61/*'='*/) 
 		{
 			close(fp);
-			msg = &SP_CONFIG_INVALID_STRING;
+			*msg = SP_CONFIG_INVALID_STRING;
 			return NULL;
 		}
 		
@@ -157,7 +157,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 			if((val = (char*)realloc(val, i + 1)) == NULL )
 			{
 				close(fp);
-				msg = SP_CONFIG_ALLOC_FAIL;
+				*msg = SP_CONFIG_ALLOC_FAIL;
 				return NULL;
 			}
 			val[i] = read;
@@ -167,14 +167,14 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		if((val = (char*)realloc(val, i + 1)) == NULL )
 		{
 			close(fp);
-			msg = SP_CONFIG_ALLOC_FAIL;
+			*msg = SP_CONFIG_ALLOC_FAIL;
 			return NULL;
 		}
 		val[i] = 0;
 
 		if(read == EOL || read == EOF)
 		{
-			new_msg = &add_field_to_struct(var, val);
+			*new_msg = add_field_to_struct(var, val);
 			if (*new_msg != SP_CONFIG_SUCCESS){
 				close(fp);
 				free(val);
@@ -185,7 +185,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		SKIP_WHITESPACES;
 		if(read != EOL || read != EOF)
 		{
-			msg = &SP_CONFIG_INVALID_STRING;
+			*msg = SP_CONFIG_INVALID_STRING;
 			return NULL;
 		}
 	}	
@@ -194,7 +194,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	{
 		if (corr_field_cell[i] != 1)
 		{
-			msg =  &conf_error[i];
+			*msg =  conf_error[i];
 			return NULL;
 		}
 	}
