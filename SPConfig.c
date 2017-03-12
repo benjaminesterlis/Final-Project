@@ -57,15 +57,27 @@ SPConfig conf;
  * - cell 1  for spImagesPrefix
  * - cell 2  for spImagesSuffix
  * - cell 3  for spNumOfImages
+ * - cell 4 for spPCADimension
+ * - cell 5 for spPCAFilename
+ * - cell 6 for spNumOfFeatures
+ * - cell 7 for spExtractionMode
+ * - cell 8 for spNumOfSimilarImages
+ * - cell 9 for spKDTreeSplitMethod
+ * - cell 10 for spKNN
+ * - cell 11 for spMinimalGUI
+ * - cell 12 for spLoggerLevel
+ * - cell 13 for spLoggerFilename
  * - cell value is 0 if not changed
  * - every time we changed each varilabe we increment the corresponded cell
 */
-int corr_field_cell[4]={0};
+int corr_field_cell[14]={0};
 /**
  * Fit SP_CONFIG_MSG error to his cell
+ * We need the errors only of the first 4 variables beasue 
+ * other got defualt value, so they must not be change
 */
 SP_CONFIG_MSG conf_error[4]={SP_CONFIG_MISSING_DIR, SP_CONFIG_MISSING_PREFIX,
-						SP_CONFIG_MISSING_SUFFIX, SP_CONFIG_MISSING_NUM_IMAGES};
+						SP_CONFIG_MISSING_SUFFIX, SP_CONFIG_MISSING_NUM_IMAGES,SP_CONFIG_DOUBLE_USED_VAR};
 
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 {
@@ -190,12 +202,18 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		}
 	}	
 
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 14; i++)
 	{
-		if (corr_field_cell[i] != 1)
+		if ( i < 4 && corr_field_cell[i] == 0 )
 		{
 			*msg =  conf_error[i];
 			return NULL;
+		}
+		// for error SPCONFIG_DOULBE_USED_VAR
+		if( corr_filed_cell[i] > 1)
+		{
+			*msg = conf_error[5]
+			return NULL
 		}
 	}
 
@@ -260,6 +278,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spPCADimension
 	if(strcmp(SP_PCAD,var) == 0 )
 	{
+		corr_field_cell[4]++;
 		conf-> spPCADimension = (int)strtol(val,&temp,10);
 		if(*temp)
 			return SP_CONFIG_INVALID_INTEGER;
@@ -269,6 +288,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spPCAFilename
 	if(strcmp(SP_PCAF,var) == 0 )
 	{
+		corr_field_cell[5]++;
 		conf->spPCAFilename = val;
 		return SP_CONFIG_SUCCESS;
 	}
@@ -276,6 +296,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spNumOfFeatures
 	if(strcmp(SP_NOF,var) == 0 )
 	{
+		corr_field_cell[6]++;
 		conf->spNumOfFeatures = (int)strtol(val,&temp,10);
 		if(*temp)
 			return SP_CONFIG_INVALID_INTEGER;
@@ -285,6 +306,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spExtractionMode
 	if(strcmp(SP_EXM,var) == 0 )
 	{
+		corr_field_cell[7]++;
 		if (strcmp(val,"true") == 0)
 		{
 			conf->spExtractionMode = true;
@@ -301,6 +323,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spNumOfSimilarImages
 	if(strcmp(SP_NOFSI,var) == 0 )
 	{
+		corr_field_cell[8]++;
 		conf->spNumOfSimilarImages = (int)strtol(val,&temp,10);
 		if(*temp)
 			return SP_CONFIG_INVALID_INTEGER;
@@ -310,6 +333,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spKDTreeSplitMethod
 	if(strcmp(SP_KDTSM,var) == 0 )
 	{
+		corr_field_cell[9]++;
 		if(strcmp(val, "RANDOM") == 0)
 		{
 			conf->spKDTreeSplitMethod = RANDOM;	
@@ -331,6 +355,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spKNN
 	if(strcmp(SP_KNN,var) == 0 )
 	{
+		corr_field_cell[10]++;
 		conf->spKNN = (int)strtol(val,&temp,10);
 		if(*temp)
 			return SP_CONFIG_INVALID_INTEGER;
@@ -340,6 +365,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spMinimalGUI
 	if(strcmp(SP_MGUI,var) == 0 )
 	{
+		corr_field_cell[11]++;
 		if (strcmp(val,"true") == 0)
 		{
 			conf->spMinimalGUI = true;
@@ -356,6 +382,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spLoggerLevel
 	if(strcmp(SP_LL,var) == 0 )
 	{
+		corr_field_cell[12]++;
 		conf->spLoggerLevel = (int)strtol(val,&temp,10);
 		if(*temp)
 			return SP_CONFIG_INVALID_INTEGER;
@@ -365,6 +392,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val)
 	// spLoggerFilename
 	if(strcmp(SP_LF,var) == 0 )
 	{
+		corr_field_cell[13]++;
 		conf->spLoggerFilename = val;
 		return SP_CONFIG_SUCCESS;
 	}
