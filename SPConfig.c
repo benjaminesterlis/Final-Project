@@ -35,6 +35,7 @@
 			if ( i < 4 && corr_field_cell[i] == 0 ) \
 			{ \
 				free(val); \
+				printf("File:%s\nLine%d\nMessage:Parameter %s is not set", filename, line, must_param_name[i]); \
 				FREE(conf_error[i]); \
 			} \
 			if( corr_field_cell[i] > 1) \
@@ -94,6 +95,14 @@ struct sp_config_t
  * need to free all items which thiers cells are true
  */
 bool sp_free[5] = {false, false, false, false, false};
+/**
+ * - cell 0  for spImagesDirectory
+ * - cell 1  for spImagesPrefix
+ * - cell 2  for spImagesSuffix
+ * - cell 3  for spNumOfImages
+ * - to know what param name need to retrurn in case not met in conf file
+ */
+char* must_param_name[4] = {SP_DIR, SP_PRE, SP_SUF, SP_NOI};
 
 SPConfig conf;
 
@@ -114,7 +123,7 @@ SPConfig conf;
  * - cell 13 for spLoggerFilename
  * - cell value is 0 if not changed
  * - every time we changed each varilabe we increment the corresponded cell
-*/
+ */
 int corr_field_cell[14]={0};
 /**
  * Fit SP_CONFIG_MSG error to his cell
@@ -128,7 +137,7 @@ SP_CONFIG_MSG conf_error[5]={SP_CONFIG_MISSING_DIR, SP_CONFIG_MISSING_PREFIX,
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 {
 	assert(msg != NULL);
-
+	int line = 0;
 	FILE* fp;
 	int i = 0;
 	char var[200]; //beacuse variables names are no longer then 200 ;)
@@ -177,6 +186,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 
 	while ((read = getc(fp)) != EOF)
 	{
+		line++;//to see the line in case of error
 		// for empty lines
 		if(read == EOL)
 			continue;
@@ -195,13 +205,19 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 				read = getc(fp);
 			}
 			else
-				FREE(SP_CONFIG_INVALID_STRING);		
+			{
+				printf("File:%s\nLine%d\nMessage:Invalid configuration line", filename, line);
+				FREE(SP_CONFIG_INVALID_STRING);
+			}
 		}
 
 		SKIP_WHITESPACES;
 		//if there are whitespaces in varliabes name
 		if ( read != 61/*'='*/) 
+		{
+			printf("File:%s\nLine%d\nMessage:Invalid configuration line", filename, line);
 			FREE(SP_CONFIG_INVALID_STRING);
+		}
 		
 		SKIP_WHITESPACES;
 		i = 0;
@@ -225,7 +241,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		SKIP_WHITESPACES;
 		if(read == EOL || read == EOF)
 		{
-			*new_msg = add_field_to_struct(var, val, i + 1);
+			*new_msg = add_field_to_struct(var, val, i + 1, filename, line);
 			if (*new_msg != SP_CONFIG_SUCCESS){
 				free(val);
 				spConfigDestroy(conf);
@@ -236,6 +252,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		}
 		else
 		{
+			printf("File:%s\nLine%d\nMessage:Invalid configuration line", filename, line);
 			free(val);
 			FREE(SP_CONFIG_INVALID_STRING);
 		}
@@ -352,7 +369,7 @@ void spConfigDestroy(SPConfig config)
 	free(config);
 }
 
-SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n)
+SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filename, int line)
 {	
 	char *temp;
 	if(val == NULL || var == NULL)
@@ -528,6 +545,7 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n)
 		sp_free[4] = true;
 		return SP_CONFIG_SUCCESS;
 	}
+	printf("File:%s\nLine%d\nInvalid value-constraint not met", filename, line);
 	return SP_CONFIG_WRONG_FIELD_NAME;
 }
 

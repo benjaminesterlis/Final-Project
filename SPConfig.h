@@ -190,6 +190,7 @@ void spConfigDestroy(SPConfig config);
  * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no filed named $var
  * - SP_CONDIF_SUCCEES - otherwise
  */
-SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n);
+SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filename, int line);
 
 #endif /* SPCONFIG_H_ */
+
