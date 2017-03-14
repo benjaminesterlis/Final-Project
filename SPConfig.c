@@ -88,7 +88,7 @@ struct sp_config_t
 
 /**
  * cell 0 for spImagesPrefix
- * cell 1 for spImgaesSuffix
+ * cell 1 for spImagesSuffix
  * cell 2 for spImagesDirectory
  * cell 3 for spLoggerFilename
  * cell 4 for spPCAFilename
@@ -335,7 +335,14 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 
 	if( conf->spNumOfImages <= index)
 		return SP_CONFIG_INDEX_OUT_OF_RANGE;
-	
+
+	/* We did realloc for enough spaces beaucse it is much easier to realloc now 
+	then in the main becuase here we got the fields */
+	imagePath = realloc(imagePath, strlen(imagePath) + strlen(conf->spImagesDirectory) +
+													log(index) + strlen(conf->spImagesSuffix))
+	if(imagePath == NULL)
+		return SP_CONFIG_ALLOC_FAIL;
+
 	/* assmued sprintf always works */
 	sprintf(imagePath, "%s%s%d%s", conf->spImagesDirectory, conf->spImagesPrefix,
 									index, conf->spImagesSuffix);
@@ -378,7 +385,7 @@ void spConfigDestroy(SPConfig config)
  * - SP_CONFIG_INVALID_STRING - in case there is no such field name $var in SPConfig
  * - SP_CONFIG_INVALID_BOOLEAN - in case type of var is boolean and val is not
  * - SP_CONFIG_INVLAID_ENUM - in case string is not one of enum
- * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no filed named $var
+ * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no field named $var
  * - SP_CONDIF_SUCCEES - otherwise
  */
 static

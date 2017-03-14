@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sp_image_proc_util.h>
 #include "SPConfig.h"
+#include "SPCBIR.h"
 
 #define DEFAULT "spcbir.config"
 
@@ -41,4 +43,18 @@ int main(int argc, char const *argv[])
 		return -1;
 	}
 	return 0;
+}
+
+void extract_feats_to_file(SPConfig conf);
+{
+	char *path = NULL;
+	SP_CONFIG_MSG* msg;
+	int cnt = spConfigGetNumOfFeatures(conf, msg);
+	for (int i = 0; i < cnt; ++i)
+	{
+		if (SP_CONFIG_SUCCESS != spConfigGetImagePath(path, conf, i))
+		{
+
+		}
+	}
 }
