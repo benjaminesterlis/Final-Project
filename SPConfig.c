@@ -369,6 +369,19 @@ void spConfigDestroy(SPConfig config)
 	free(config);
 }
 
+
+/**
+ * this function get two strings ($var, $val) and set
+ * SPConfig.$var = $val
+ * @retrun
+ * - SP_CONFIG_INVALID_INTEGER - in case type of $var is int and $val is string
+ * - SP_CONFIG_INVALID_STRING - in case there is no such field name $var in SPConfig
+ * - SP_CONFIG_INVALID_BOOLEAN - in case type of var is boolean and val is not
+ * - SP_CONFIG_INVLAID_ENUM - in case string is not one of enum
+ * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no filed named $var
+ * - SP_CONDIF_SUCCEES - otherwise
+ */
+static
 SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filename, int line)
 {	
 	char *temp;
