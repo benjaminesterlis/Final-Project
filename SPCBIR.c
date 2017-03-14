@@ -1,4 +1,6 @@
-#include <>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "SPConfig.h"
 
 #define DEFAULT "spcbir.config"
@@ -12,13 +14,13 @@ int main(int argc, char const *argv[])
 		conf = spConfigCreate(DEFAULT, msg);
 		if (conf == NULL)
 		{
-			printf("%s%s\n", "The default Configuration file "DEFAULT" couldn't be open");
+			printf("%s\n", "The default Configuration file "DEFAULT" couldn't be open");
 			return -1;
 		}
 	}
 	else if (argc == 3)
 	{
-		if (*strcmp(argv[1], "-c"))
+		if (!strcmp(argv[1], "-c"))
 		{
 			conf = spConfigCreate(argv[2], msg);
 			if (conf == NULL)
@@ -29,13 +31,13 @@ int main(int argc, char const *argv[])
 		}
 		else
 		{
-			printf("%s%s\n", "invalid command line:use -c <config_filename>");
+			printf("%s\n", "invalid command line:use -c <config_filename>");
 			return -1;
 		}
 	}
 	else
 	{
-		printf("%s%s\n", "invalid command line:use -c <config_filename>");
+		printf("%s\n", "invalid command line:use -c <config_filename>");
 		return -1;
 	}
 	return 0;

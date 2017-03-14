@@ -548,8 +548,3 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filen
 	printf("File:%s\nLine%d\nInvalid value-constraint not met", filename, line);
 	return SP_CONFIG_WRONG_FIELD_NAME;
 }
-
-int main(int argc, char const *argv[])
-{
-	return 0;
-}
