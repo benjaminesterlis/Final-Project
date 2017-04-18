@@ -7,72 +7,82 @@
 
 #define RND_HALF(num) (num % 2 == 0) ? (num / 2) : (num / 2 + 1)
 #define SEND_ERROR(error) \
+do { \
 	printf("%d %s, Line: %d\n",errno, (error), __LINE__); \
-	return -1;
+	return -1; \
+} while(0);
 
 #define SEND_ERROR_INIT(error) \
-	// need first to free the SPPoints. \
+do { \
+	printf("%d", __LINE__); \
+	/* need first to free the SPPoints.*/ \
 	if (need_To_Free_Init[2] > 0) \
 		for (Just4Free = 0; Just4Free < need_To_Free_Init[2]; Just4Free++) \
-		spPointDestroy(kdarr->copied_arr[Just4Free]); \
-	// free the copied SPPoint array a.k.a copied_arr. \
-	if(need_To_Free_Init[3] == 1) \
+			spPointDestroy(kdarr->copied_arr[Just4Free]); \
+	printf("%d", __LINE__); \
+	/* free the copied SPPoint array a.k.a copied_arr.*/ \
+	if(need_To_Free_Init[1] == 1) \
 			free(kdarr->copied_arr); \
-	// need first to free the mat rows (int*) \
-	if(need_To_Free_Init[4] > 0)	\
+	printf("%d", __LINE__); \
+	/* need first to free the mat rows (int*) */ \
+	if(need_To_Free_Init[4] > 0) \
 		for (Just4Free = 0; Just4Free < need_To_Free_Init[3]; Just4Free++) \
 			free(kdarr->mat[Just4Free]); \
-	// free the mat itself \
-	if(need_To_Free_Init[5] == 1) \
+	printf("%d", __LINE__); \
+	/* free the mat itself */ \
+	if(need_To_Free_Init[3] == 1) \
 		free(kdarr->mat); \
-	// frre the memory allocated for kdarr pointer \
+	printf("%d", __LINE__); \
+	/* frre the memory allocated for kdarr pointer */ \
 	if(need_To_Free_Init[0] == 1) \
 		free(kdarr); \
-	SEND_ERROR(error);
+	SEND_ERROR(error); \
+} while(0);
 
 #define SEND_ERROR_SPLIT(error) \
-	// To free the perm array \
-	if (need_To_Free_Split[11] == 1) \ 
+do { \
+	/* To free the perm array */ \
+	if (need_To_Free_Split[11] == 1) \
 		free(perm); \
-	// To free the perm_reverse array \
+	/* To free the perm_reverse array */ \
 	if (need_To_Free_Split[10] == 1) \
 		free(perm_reverse); \
-	// To free the points in kdright->copied_arr. \
+	/* To free the points in kdright->copied_arr. */ \
 	if(need_To_Free_Split[9] > 0) \
 		for (Just4Free = 0; Just4Free < need_To_Free_Split[9]; Just4Free++) \
 			free(kdright->copied_arr[Just4Free]); \
-	// To free the points in kdleft->copied_arr. \
+	/* To free the points in kdleft->copied_arr. */ \
 	if(need_To_Free_Split[8] > 0 ) \
 		for (Just4Free = 0; Just4Free < need_To_Free_Split[8]; Just4Free++) \
 			free(kdleft->copied_arr[Just4Free]); \
-	// To free rows in kdright->mat. \
+	/* To free rows in kdright->mat. */ \
 	if(need_To_Free_Split[7] > 0) \
 		for ( Just4Free = 0; Just4Free < need_To_Free_Split[7]; Just4Free++) \
 			free(kdright->mat[Just4Free]); \
-	// To free kdright->mat. \
+	/* To free kdright->mat. */ \
 	if(need_To_Free_Split[6] == 1) \
 		free(kdright->mat); \
-	// To free kdright->copied arr pointer. \
+	/* To free kdright->copied arr pointer. */ \
 	if(need_To_Free_Split[5] == 1) \
 		free(kdright->copied_arr); \
-	// To free kdright pointer. \
+	/* To free kdright pointer.  */ \
 	if(need_To_Free_Split[4] == 1) \
 		free(kdright); \
-	// To free rows in kdleft->mat. \
+	/* To free rows in kdleft->mat.  */ \
 	if(need_To_Free_Split[3] > 0) \
 		for (Just4Free = 0; Just4Free < need_To_Free_Split[3]; Just4Free++) \
 			free(kdleft->mat[Just4Free]); \
-	// To free kdleft->mat \
+	/* To free kdleft->mat */ \
 	if (need_To_Free_Split[2] == 1) \
 		free(kdleft->mat); \
-	// To free kdleft->copied_arr pointer. \
+	/* To free kdleft->copied_arr pointer. */ \
 	if(need_To_Free_Split[1] == 1) \
 		free(kdleft->copied_arr); \
-	// To free kdleft pointer \
+	/* To free kdleft pointer */ \
 	if (need_To_Free_Split[0] == 1) \
-		free(kdelft); \
-	SEND_ERROR(error);
-
+		free(kdleft); \
+	SEND_ERROR(error); \
+} while(0);
 
 /*
  * need_To_Free_Split is an array which says what we need to free in the split method
@@ -103,10 +113,13 @@ int need_To_Free_Init[5] = {0};
 
 int Init(SPPoint** arr, int size, KDArray* kdarr)
 {
+
 	int Just4Free;	
 	int* Sorted_Coor_i;
 	int i, j;
 	int dim;
+	if (size <= 0)
+		return -1;
 
 	if((kdarr = (KDArray*)malloc(sizeof(KDArray))) == NULL)
 		SEND_ERROR_INIT("Error, Allocation failure");
@@ -115,22 +128,28 @@ int Init(SPPoint** arr, int size, KDArray* kdarr)
 	dim = spPointGetDimension(arr[0]);
 	kdarr->size = size;
 	kdarr->dim = dim;
+	printf("%d Line: %d\n", kdarr->size, __LINE__);
 
 	if((kdarr->copied_arr = (SPPoint**)malloc(sizeof(SPPoint*) * size)) == NULL)
 		SEND_ERROR_INIT("Error, Allocation failure");
 	need_To_Free_Init[1]++;
 
+	printf("%d Line: %d\n", kdarr->size, __LINE__);
 	for (i = 0; i < size; i++)
 	{	
-		if((kdarr->copied_arr[i] = spPointCopy(arr[i])) == NULL)
+		printf("%s%d Line:%d\n","before copy point no.: ", i, __LINE__ );
+		
+		if( (kdarr->copied_arr[i] = spPointCopy(arr[i])) == NULL)
 			SEND_ERROR("Error, Allocation failure");
+		printf("%s%d Line:%d\n","after copy point no.: ", i, __LINE__ );
 		// Append another Coordinate to each point with the its index in the permutation. 
 		if((kdarr->copied_arr[i] = ExpendDim(kdarr->copied_arr[i],i)) == NULL)
 			SEND_ERROR("Error, Expend dimention");
 		need_To_Free_Init[2]++;
+		printf("%s%d Line:%d\n","after ExpendDim point no.: ", i, __LINE__ );
 	}
 
-	
+	printf("%d Line: %d\n", kdarr->size, __LINE__);
 	//malloc memory for the maxtrin with size of n * d.
 	if((kdarr->mat = (int**)malloc(sizeof(int*) * dim)) == NULL)
 		SEND_ERROR_INIT("Error, Allocation failure");
@@ -147,7 +166,7 @@ int Init(SPPoint** arr, int size, KDArray* kdarr)
 		need_To_Free_Init[4]++;
 		kdarr->mat[i] = Sorted_Coor_i;
 	}
-
+	
 	for (i = size - 1; i >= 0; i--)
 	{
 		// Set the real order of the points at the arr.
@@ -262,13 +281,13 @@ int split(KDArray* kdarr, int coor, KDArray* kdleft, KDArray* kdright)
 
 	for (i = 0; i < kdleft->size; i++){
 		if((kdleft->copied_arr[i] = spPointCopy(kdarr->copied_arr[perm[i]])) == NULL)
-			SEND_ERROR_SPLIT("Error, spPOintCopy failue")
+			SEND_ERROR_SPLIT("Error, spPOintCopy failue");
 		need_To_Free_Split[8]++;
 	}
 
 	for (i = 0; i < kdright->size; i++){
 		if((kdright->copied_arr[i] = spPointCopy(kdarr->copied_arr[perm[i + RND_HALF(kdarr->size) + 1]])) == NULL)
-			SEND_ERROR_SPLIT("Error, spPOintCopy failue")
+			SEND_ERROR_SPLIT("Error, spPOintCopy failue");
 		need_To_Free_Split[9]++;
 	}
 	return 0;
@@ -302,4 +321,3 @@ int** GetKDArrayMat(KDArray* arr)
 		return NULL;
 	return arr->mat;
 }
-
