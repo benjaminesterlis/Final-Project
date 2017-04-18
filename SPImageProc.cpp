@@ -9,10 +9,6 @@
 #include <cstdio>
 #include "SPImageProc.h"
 
-extern "C" {
-#include "SPLogger.h"
-}
-
 using namespace cv;
 using namespace std;
 

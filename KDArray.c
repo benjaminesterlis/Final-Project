@@ -303,9 +303,3 @@ int** GetKDArrayMat(KDArray* arr)
 	return arr->mat;
 }
 
-
-int main(int argc, char const *argv[])
-{
-	/* code */
-	return 0;
-}

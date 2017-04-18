@@ -179,5 +179,8 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
  */
 void spConfigDestroy(SPConfig config);
 
+SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
+
+
 #endif /* SPCONFIG_H_ */
 

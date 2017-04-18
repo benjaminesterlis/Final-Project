@@ -26,16 +26,16 @@ struct sp_logger_t {
 
 SP_LOGGER_MSG WRITE_FILE(const char *log_type, const char *file, const char *function, int line, const char *msg) 
 { 
-	if( fprintf(logger->outputChannel, "%s\n", log_type) < strlen(log_type) + 1 )
+	if( fprintf(logger->outputChannel, "%s\n", log_type) < (int)strlen(log_type) + 1 )
 		return SP_LOGGER_WRITE_FAIL;
-	if( fprintf(logger->outputChannel, "%s%s\n", LOG_FILE, file) < strlen(LOG_FILE) + strlen(file) + 1 ) 
+	if( fprintf(logger->outputChannel, "%s%s\n", LOG_FILE, file) < (int)(strlen(LOG_FILE) + strlen(file) + 1) ) 
 		return SP_LOGGER_WRITE_FAIL; 
-	if( fprintf(logger->outputChannel, "%s%s\n", LOG_FUNC, function) < strlen(LOG_FUNC) + strlen(function) + 1) 
+	if( fprintf(logger->outputChannel, "%s%s\n", LOG_FUNC, function) < (int)(strlen(LOG_FUNC) + strlen(function) + 1) ) 
 		return SP_LOGGER_WRITE_FAIL; 
-	if( fprintf(logger->outputChannel, "%s%d\n", LOG_LINE, line) < strlen(LOG_LINE) + (int)log(line) + 1) 
+	if( fprintf(logger->outputChannel, "%s%d\n", LOG_LINE, line) < (int)(strlen(LOG_LINE) + (int)log(line) + 1) ) 
 		return SP_LOGGER_WRITE_FAIL; 
-	if( fprintf(logger->outputChannel, "%s%s\n", LOG_MSG, msg) < strlen(LOG_MSG) + strlen(msg) + 1) 
-		return SP_LOGGER_WRITE_FAIL;
+	if( fprintf(logger->outputChannel, "%s%s\n", LOG_MSG, msg) < (int)(strlen(LOG_MSG) + strlen(msg) + 1) )
+ 		return SP_LOGGER_WRITE_FAIL;
 	return SP_LOGGER_SUCCESS;
 }
 
@@ -93,9 +93,11 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg)
 		return SP_LOGGER_WRONG_LEVEL;
 	if( !msg || NULL != NULL /*overkill: Vigilance Test*/)
 		return SP_LOGGER_INVALID_ARGUMENT;
-	if( fprintf(logger->outputChannel, "%s\n", LOG_INFO) < strlen(LOG_INFO) + 1 )
+	if( fprintf(logger->outputChannel, "%s\n", LOG_INFO) < (int)strlen(LOG_INFO) + 1 )
 		return SP_LOGGER_WRITE_FAIL;
-
+	if( fprintf(logger->outputChannel, "%s%s\n", LOG_MSG, msg) < (int)(strlen(LOG_MSG) + strlen(msg) + 1) )
+ 		return SP_LOGGER_WRITE_FAIL;
+ 	return SP_LOGGER_SUCCESS;
 }
 
 SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
@@ -116,7 +118,7 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char* msg)
 		return SP_LOGGER_UNDIFINED;
 	if( !msg || NULL != NULL /*overkill: Vigilance Test*/)
 		return SP_LOGGER_INVALID_ARGUMENT;
-	if( fprintf(logger->outputChannel, "%s\n", msg) < strlen(msg) + 1)
+	if( fprintf(logger->outputChannel, "%s\n", msg) < (int)strlen(msg) + 1)
 		return SP_LOGGER_WRITE_FAIL;
 	return SP_LOGGER_SUCCESS;
 }
