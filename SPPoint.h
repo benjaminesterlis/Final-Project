@@ -140,5 +140,6 @@ int Mine_Cmp(const void* a, const void *b);
  * If at the last coordinate there is their order.
  * Comlpexity O(n*log(n))
  */
- double* spSortByIndex(SPPoint** arr, int index)
+ int* spPointSortByIndex(SPPoint** arr, int index, int size);
+
 #endif /* SPPOINT_H_ */

@@ -118,7 +118,7 @@ SPPoint* ExpendDim(SPPoint* p, double val)
 	}
 
 	copy(expend_data, p->data, dim);
-	expend_data[dim] = i;
+	expend_data[dim] = val;
 	spPointDestroy(p);
 
 	if((q = spPointCreate(expend_data, dim + 1, index)) == NULL){
@@ -145,7 +145,7 @@ int* spPointSortByIndex(SPPoint** arr, int index, int size)
 	if((indexes = (int*)malloc(sizeof(int) * size)) == NULL)
 		return NULL;
 	
-	qsort(arr, size, sizeof(*arr), Mine_Cmp());
+	qsort(arr, size, sizeof(*arr), Mine_Cmp);
 	for (i = 0; i < size; i++)
 		indexes[i] = (int)spPointGetAxisCoor(arr[i],spPointGetDimension(arr[i]) -1);
 

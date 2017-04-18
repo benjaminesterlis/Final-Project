@@ -1,6 +1,11 @@
 #include "SPPoint.h"
 
-typedef struct sp_KDArray_t KDTreeArray;
+typedef struct sp_KDArray_t
+{
+	SPPoint** copied_arr;
+	int size, dim;
+	int** mat;
+} KDArray;
 
 /* Noitce in our implementation we added another Dim to each point
  * which will hold the place of this point in the real order of the points.
@@ -26,7 +31,7 @@ void KDArrayDestroy(KDArray* arr);
 /*
  * 
  */
-int split(KDArray kdarr, int coor, KDArray kdleft, KDArray kdright);
+int split(KDArray* kdarr, int coor, KDArray* kdleft, KDArray* kdright);
 
 
 /* 
@@ -42,9 +47,9 @@ int GetKDArrayDim(KDArray* arr);
 /* 
  * read the function name and you will understand
 */
-SPPOint** GetKDArrayCopied_Arr(KDArray* arr);
+SPPoint** GetKDArrayCopied_Arr(KDArray* arr);
 
 /* 
  * read the function name and you will understand
 */
-mat** GetKDArrayMat(KDArray* arr)
+int** GetKDArrayMat(KDArray* arr);
