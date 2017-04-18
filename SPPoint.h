@@ -40,6 +40,11 @@ typedef struct sp_point_t SPPoint;
  */
 SPPoint* spPointCreate(double* data, int dim, int index);
 
+/*
+ * Copy (@range) item from double Array (@src)to (@dest)
+ */
+void copy(double *dest, double *src, int range);
+
 /**
  * Allocates a copy of the given point.
  *
@@ -53,9 +58,10 @@ SPPoint* spPointCreate(double* data, int dim, int index);
  * @assert (source != NUlL)
  * @return
  * NULL in case memory allocation occurs
- * Others a copy of source is returned.
+ * Otherwisse a copy of source is returned.
  */
 SPPoint* spPointCopy(SPPoint* source);
+
 
 /**
  * Free all memory allocation associated with point,
@@ -108,5 +114,31 @@ double spPointGetAxisCoor(SPPoint* point, int axis);
  */
 double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
 
+/*
+ * expend the dim by 1 of the point p with the value of val.
+*/
+SPPoint* ExpendDim(SPPoint* p, double val); 
 
+/*
+ * Remove the last Dim from the point.
+ */
+SPPoint* spPointDecreaseDim(SPPoint* p);
+/*
+ * Sort function for spSortByIndex.
+ * assuming a & b are SPPoint.
+ * retrun < 0 if the a -> data[i] < b -> data[i]
+ * retrun 0 if the a -> data[i] = b -> data[i]
+ * return > 0 if the a -> data[i] > b -> data[i]
+*/
+int Mine_Cmp(const void* a, const void *b);
+
+/*
+ * Sort the points at array @arr by given index @index.
+ * Sort with qsort.
+ * return double array which in the pos [i] is the 
+ * i's size smallest coordinate. 
+ * If at the last coordinate there is their order.
+ * Comlpexity O(n*log(n))
+ */
+ double* spSortByIndex(SPPoint** arr, int index)
 #endif /* SPPOINT_H_ */

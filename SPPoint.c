@@ -11,7 +11,9 @@ struct sp_point_t
 	int index;
 };
 
-void copy(double *, double *, int range);
+int SortIdnex; // Global Var to sort the SPPoints array by this coordinate
+
+void copy(double *dest, double *src, int range);
 
 SPPoint* spPointCreate(double* data, int dim, int index) 
 {
@@ -20,8 +22,10 @@ SPPoint* spPointCreate(double* data, int dim, int index)
 	SPPoint *sp = malloc(sizeof(*sp));
 	if (sp == NULL)
 		return NULL;
-	if ((sp->data = (double *)malloc(sizeof(double) * dim)) == NULL)
+	if ((sp->data = (double *)malloc(sizeof(double) * dim)) == NULL){
+		free(sp);
 		return NULL; 
+	}
 	copy(sp->data, data, dim);
 	sp->dim = dim; // (*sp).dim = dim
 	sp->index = index; // (*sp).index = index
@@ -34,8 +38,10 @@ SPPoint* spPointCopy(SPPoint* source)
 	SPPoint *sp = malloc(sizeof(*source));
 	if (sp == NULL)
 		return NULL;
-	if ((sp->data = (double *)malloc(sizeof(double) * source->dim)) == NULL)
+	if ((sp->data = (double *)malloc(sizeof(double) * source->dim)) == NULL){
+		free(sp);
 		return NULL;
+	}
 	copy(sp->data, source->data, source->dim);
 	sp->dim = source->dim;
 	sp->index = source->index;
@@ -67,7 +73,7 @@ int spPointGetIndex(SPPoint* point)
 
 double spPointGetAxisCoor(SPPoint* point, int axis) 
 {
-	assert (point!=NULL || axis < point->dim);
+	assert (point != NULL || axis < point->dim);
 	return point->data[axis-1];
 }
 
@@ -92,4 +98,66 @@ void copy(double *dest, double *src, int range)
 	{
 		dest[i] = src[i];
 	}
+}
+
+SPPoint* ExpendDim(SPPoint* p, double val)
+{
+	if (p == NULL)
+		return NULL;
+
+	SPPoint* q;
+	int dim, index;
+	double* expend_data;
+
+	dim = spPointGetDimension(p);
+	index = spPointGetIndex(p);
+	
+	if((expend_data = (double*)malloc(sizeof(double) * (dim + 1))) == NULL){
+		spPointDestroy(p);
+		return NULL;
+	}
+
+	copy(expend_data, p->data, dim);
+	expend_data[dim] = i;
+	spPointDestroy(p);
+
+	if((q = spPointCreate(expend_data, dim + 1, index)) == NULL){
+		free(expend_data);
+		return NULL;
+	}
+	free(expend_data);
+	return q;
+}
+
+int Mine_Cmp(const void* a, const void *b){ 
+	return spPointGetAxisCoor((SPPoint*)a, SortIdnex)- spPointGetAxisCoor((SPPoint*)b, SortIdnex); 
+}
+
+
+
+int* spPointSortByIndex(SPPoint** arr, int index, int size)
+{
+	int i;
+	int* indexes;
+	SortIdnex = index;
+	if (arr == NULL)
+		return NULL;
+	if((indexes = (int*)malloc(sizeof(int) * size)) == NULL)
+		return NULL;
+	
+	qsort(arr, size, sizeof(*arr), Mine_Cmp());
+	for (i = 0; i < size; i++)
+		indexes[i] = (int)spPointGetAxisCoor(arr[i],spPointGetDimension(arr[i]) -1);
+
+	return indexes;
+} 
+
+SPPoint* DecreaseDim(SPPoint* p)
+{
+	if(p == NULL)
+		return NULL;
+	p->dim--;
+	if((p->data = realloc(p->data, p->dim)) == NULL)
+		return NULL;
+	return p;
 }

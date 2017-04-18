@@ -46,7 +46,7 @@
 		} \
 	} while(0)
 
-#define O_RDONLY "r"
+#define O_RONLY "r"
 #define	SP_DIR "spImagesDirectory"
 #define	SP_PRE "spImagesPrefix"
 #define	SP_SUF "spImagesSuffix"

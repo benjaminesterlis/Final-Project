@@ -9,13 +9,13 @@ struct sp_bp_queue_t
 	int max_size;
 };
 
-#define InsertElemNext(source,i,ind,val) { \
-	(source->elements[i]).index = ind; \
- 	(source->elements[i]).value = val; \
+#define InsertElemNext(source,i,ind,val) {\
+	(source->elements[i]).index = ind;\
+ 	(source->elements[i]).value = val;\
 }
 
-#define CheckIfNULL(source,msg){ \
-	if ( (source) == NULL) \
+#define CheckIfNULL(source,msg){\
+	if ( (source) == NULL)\
 		return (msg); \
 }
 
