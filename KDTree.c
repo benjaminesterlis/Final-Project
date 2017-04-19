@@ -4,7 +4,7 @@
 
 #define RND_HALF(num) (num % 2 == 0) ? (num / 2) : (num / 2 + 1)
 #define COOR_VAL_BY_ORDER(arr, mat, dim, rank) \
-	spPointGetAxisCoor(GetKDArrayCopied_Arr(arr)[mat[dim][rank]], dim)
+	spPointGetAxisCoor(GetKDArrayCopied_Arr(arr)[mat[dim][rank]], dim + 1)
 #define SPREAD_BY_COOR(arr, mat, dim, first, last)  \
 	COOR_VAL_BY_ORDER(arr, mat, dim, first) - COOR_VAL_BY_ORDER(arr, mat, dim, last) 
 #define KD_S(check, kdside, root_side, method, dim, root) \

@@ -11,7 +11,7 @@ struct sp_point_t
 	int index;
 };
 
-int SortIdnex; // Global Var to sort the SPPoints array by this coordinate
+int SortIndex; // Global Var to sort the SPPoints array by this coordinate
 
 void copy(double *dest, double *src, int range);
 
@@ -116,7 +116,6 @@ SPPoint* ExpendDim(SPPoint* p, double val)
 		spPointDestroy(p);
 		return NULL;
 	}
-
 	copy(expend_data, p->data, dim);
 	expend_data[dim] = val;
 	spPointDestroy(p);
@@ -129,8 +128,9 @@ SPPoint* ExpendDim(SPPoint* p, double val)
 	return q;
 }
 
+
 int Mine_Cmp(const void* a, const void *b){ 
-	return spPointGetAxisCoor((SPPoint*)a, SortIdnex)- spPointGetAxisCoor((SPPoint*)b, SortIdnex); 
+	return (int)(*(SPPoint**)a)->data[SortIndex] - (int)(*(SPPoint**)b)-> data[SortIndex];
 }
 
 
@@ -139,16 +139,14 @@ int* spPointSortByIndex(SPPoint** arr, int index, int size)
 {
 	int i;
 	int* indexes;
-	SortIdnex = index;
+	SortIndex = index;
 	if (arr == NULL)
 		return NULL;
 	if((indexes = (int*)malloc(sizeof(int) * size)) == NULL)
 		return NULL;
-	
-	qsort(arr, size, sizeof(*arr), Mine_Cmp);
-	for (i = 0; i < size; i++)
-		indexes[i] = (int)spPointGetAxisCoor(arr[i],spPointGetDimension(arr[i]) -1);
-
+	qsort(arr, 5, sizeof(SPPoint*), Mine_Cmp);
+	for (i = 0; i < 5; i++)
+		indexes[i] = (int)spPointGetAxisCoor(arr[i],arr[i]->dim);
 	return indexes;
 } 
 

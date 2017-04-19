@@ -19,7 +19,7 @@ typedef struct sp_KDArray_t
  * @param kdarr - An empty poitner which we will insert the new KDArray.  
  * @retrun 0 when succes , -1 otherwise.
 */
-int Init(SPPoint** arr, int size, KDArray* kdarr);
+KDArray* Init(SPPoint** arr, int size);
 
 /*
  * This is the Destroy function of KDArray,
@@ -31,8 +31,7 @@ void KDArrayDestroy(KDArray* arr);
 /*
  * 
  */
-int split(KDArray* kdarr, int coor, KDArray* kdleft, KDArray* kdright);
-
+KDArray** split(KDArray* kdarr, int coor);
 
 /* 
  * read the function name and you will understand
