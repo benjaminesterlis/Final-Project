@@ -84,10 +84,8 @@ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q)
 	assert (p!=NULL && q!=NULL && p->dim == q->dim);
 
 	for (i = 0; i < p->dim; ++i)
-	{	
 		dist += pow((p->data[i])-(q->data[i]),2);
-		//printf("%f %d\n",p->data[i],i); // why the last cell in the array is 0
-	}
+
 	return dist;
 }
 

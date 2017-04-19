@@ -4,9 +4,9 @@ CPP = g++
 OBJS = main.o SPImageProc.o SPPoint.o SPConfig.o SPLogger.o
 #The executabel filename
 EXEC = SPCBIR
-INCLUDEPATH=/usr/local/lib/opencv-3.1.0/include/
-LIBPATH=/usr/local/lib/opencv-3.1.0/lib/
-LIBS=-lopencv_xfeatures2d -lopencv_features2d \
+INCLUDEPATH = /usr/local/lib/opencv-3.1.0/include/
+LIBPATH = /usr/local/lib/opencv-3.1.0/lib/
+LIBS = -lopencv_xfeatures2d -lopencv_features2d \
 -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lopencv_core
 
 

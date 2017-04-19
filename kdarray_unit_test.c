@@ -25,31 +25,31 @@ int printSPPoint (SPPoint* p)
 	return 0;
 }
 
-int printKDArray(KDArray* arr)
-{
-	printf("******************** Start printf kdarr ********************\n");
-	int i,j;
-	SPPoint* cer;
+// int printKDArray(KDArray* arr)
+// {
+// 	printf("******************** Start printf kdarr ********************\n");
+// 	int i,j;
+// 	SPPoint* cer;
 
-	printf("Size is: %d\n", GetKDArraySize(arr));
-	printf("Dim is: %d\n", GetKDArrayDim(arr));
+// 	printf("Size is: %d\n", GetKDArraySize(arr));
+// 	printf("Dim is: %d\n", GetKDArrayDim(arr));
 	
-	for ( j = 0; j < arr->size; ++j){
-		printf("no. %d\t", j);
-		cer = arr->copied_arr[j];
-		printf("%d\n", spPointGetIndex(cer));
-	}
-	printf("Dim: %d\n", spPointGetDimension(arr->copied_arr[0]));
+// 	for ( j = 0; j < arr->size; ++j){
+// 		printf("no. %d\t", j);
+// 		cer = arr->copied_arr[j];
+// 		printf("%d\n", spPointGetIndex(cer));
+// 	}
+// 	printf("Dim: %d\n", spPointGetDimension(arr->copied_arr[0]));
 	
-	for( i = 0; i < spPointGetDimension(arr->copied_arr[0]); i++){
-		for ( j = 0; j < arr->size ; ++j){
-			printf("%d\t", arr->mat[i][j]);
-		}
-		printf("\n");
-	}
-	printf("******************** End printf kdarr ********************\n");
-	return 1;
-}
+// 	for( i = 0; i < spPointGetDimension(arr->copied_arr[0]); i++){
+// 		for ( j = 0; j < arr->size ; ++j){
+// 			printf("%d\t", arr->mat[i][j]);
+// 		}
+// 		printf("\n");
+// 	}
+// 	printf("******************** End printf kdarr ********************\n");
+// 	return 1;
+// }
 
 int main(int argc, char const *argv[])
 {
@@ -77,7 +77,6 @@ int main(int argc, char const *argv[])
 
 	// return 0;
 
-
 	double data[POINT_NUM][DIM] = {{1,2}, {123,70}, {2,7}, {9,11}, {3,4}};
 	int i;
 
@@ -88,7 +87,7 @@ int main(int argc, char const *argv[])
 	printf("%s\n", "Start_init");
 	KDArray* kdarr = Init(p_arr,POINT_NUM);
 	printf("%s\n", "Done_init");
-	//printKDArray(kdarr);
+	printKDArray(kdarr);
 	KDArray* left;
 	KDArray* right;
 	KDArray** total;
@@ -96,10 +95,10 @@ int main(int argc, char const *argv[])
 	total = split(kdarr, 0);
 	left = total[0];
 	right = total[1];
-	printf("\n");
-	printKDArray(left);
-	printf("\n");
-	printKDArray(right);
+	// printf("\n");
+	// printKDArray(left);
+	// printf("\n");
+	// printKDArray(right);
 
 
 	// Free section
@@ -108,7 +107,6 @@ int main(int argc, char const *argv[])
 
 	free(total);
 
-	printf("hello\n");
 	return 0;
 }
 
