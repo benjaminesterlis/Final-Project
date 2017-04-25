@@ -219,3 +219,6 @@ SP_LOGGER_MSG WRITE_FILE(const char *log_type, const char *file,
 						const char *function, int line, const char *msg);
 
 #endif
+
+
+
