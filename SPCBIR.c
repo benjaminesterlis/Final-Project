@@ -57,8 +57,8 @@ do { \
 
 #define WRITE(fstream, buffer, size, nitem, msg, val_msg) \
 do { \ 
-	CHECK_MSG_RET(fwrite(buffer, size, nitem, fstream), msg, val_msg); \
-}
+	CHECK_MSG_RET(fwrite(buffer, size, nitem, fstream) < (size_t)nitem, msg, val_msg); \
+} while(0)
 
 
 /********************* MAIN *********************/
