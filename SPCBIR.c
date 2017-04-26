@@ -16,6 +16,9 @@
 #define O_RDONLY "r"
 #define O_WRONLY "w"
 #define O_RDWR "r+"
+#define EXTRACT_ERROR "Extraction Error!"
+#define BUILD_ERROR "Build Data instrcution Error!"
+#define READ_ERROR "Reading Error!"
 
 #define SEND_ERROR( fmt, ...) \
 do { \
@@ -30,7 +33,7 @@ do { \
 		SEND_ERROR("%s" ,##__VA__ARGS__); \
 } while(0)
 
-#define MSG_NOT_SUCCESS(msg, error) 
+#define MSG_NOT_SUCCESS(msg, error) \
 do { \
 	if (msg != SP_CONFIG_SUCCESS) \
 		SEND_ERROR("%s", error); \
@@ -70,6 +73,8 @@ int main(int argc, char const *argv[])
 	int ret = 0;
 	SP_CONFIG_MSG msg;
 	const SPConfig confing = NULL;
+	
+	/********************** Start **********************/
 	if (argc != 3 && argc != 1)
 		SEND_ERROR("%s", INVALID_COMMAND);
 
@@ -79,6 +84,7 @@ int main(int argc, char const *argv[])
 		CHECK_RET(check_file_name(argv[2]), "ERROR, file format is *.config");	
 		file_name = argv[2];
 	}
+	/**********************INIT from  Config **********************/
 	conf = spConfigCreate(conf_file, msg);
 	if (conf == NULL)
 	{
@@ -93,7 +99,12 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	 CHECK_RET(extraction_mode(conf, msg));
+	// check if need to extact data to file
+	if (spConfigIsExtractionMode(conf, msg))
+	 	CHECK_RET(extraction_mode(conf), EXTRACT_ERROR);
+
+	// read from file
+ 	CHECK_RET(read_features(conf), BUILD_ERROR);
 
 CLEANUP:
 	return ret;
@@ -110,18 +121,19 @@ int check_file_name(char* file_name)
 	return -1;
 }
 
-int extraction_mode(const SPConfig conf, SP_CONFIG_MSG msg)
+int extraction_mode(const SPConfig conf)
 {
 
-/* need to open new files .feat and copy 
- * feats to it according to our data
- * file place is: spImagesDirectroy.
- * prefix is: spImagesPrefix.
- * suffix is: spImagesSuffix.
- * no. of images: spNumOfImages.
- * no. of features: soNumOfFeatuers.
- * all of these are fields in SPCofing conf.
-*/
+	/* need to open new files .feat and copy 
+	 * feats to it according to our data
+	 * file place is: spImagesDirectroy.
+	 * prefix is: spImagesPrefix.
+	 * suffix is: spImagesSuffix.
+	 * no. of images: spNumOfImages.
+	 * no. of features: soNumOfFeatuers.
+	 * all of these are fields in SPCofing conf.
+	*/
+	SP_CONFIG_MSG msg;
 	int ret = 0;
 	int num_of_images;
 	char* file_name = NULL;
@@ -162,8 +174,12 @@ int extraction_mode(const SPConfig conf, SP_CONFIG_MSG msg)
 		sprintf(feature_path, "%s%s%d%s",dir, suffix, i, FEAT);
 		OPEN(image_file, feature_path, O_WRONLY, msg, SP_CONFIG_CANNOT_OPEN_FILE);
 
-		//write each feature
-		fprintf(image_file, "%s$\n", num_of_features); 
+		// each image will have her own file with the following format:
+		// numOfFeatures # dimForAllPoints @ IndexForAllPoints
+		fprintf(image_file, "%d#", num_of_features);
+		sprintf(data, "%d@%d&", spPointGetDimension(features[i]), i); // index is the image number
+
+		// write each feature
 		for (j = 0; j < num_of_features; j++)
 		{
 			size_data = magic_func(features[i], data);
@@ -187,9 +203,59 @@ int magic_func(SPPoint* p, char* buf)
 	int i;
 	int read;
 
-	sprintf(buf, "%d@%d@", spPointGetDimension(p), spPointGetIndex(p));
 	for( printf(""),i = 0; i < dim; i++)
 		read = sprintf(buf, "%s%lf?",buf, spPointGetAxisCoor(p, i));
 
 	return read;
 }
+
+int read_features(const SPConfig conf)
+{
+	int ret = 0;
+	int i;
+	int num_of_images;
+	SPPoint*** arr = NULL;
+	FILE* feature_file;
+
+	for( i = 0; i < num_of_images; i++){
+		for ( j = 0; j < num_of_features; j++){
+
+		}
+		arr[i] = read_feature(feature_file, conf)
+	}
+
+
+CLEANUP:
+	return ret;
+}
+
+
+
+
+/* 
+ * Assume file is open
+ */
+SPPoint* read_feature(FILE* file){
+
+	SPPoint* feature; //malloc
+	char* ch;
+	int dim;
+	int index;
+	data* coors;
+	double place_holder;	
+	
+	CHECK_RET(fread(place_holder, sizeof(int), 1, FILE), READ_ERROR);
+	while( (ch = getc(file)) != EOF)
+	{
+
+	}
+
+
+CLEANUP:
+	return feature; 
+}
+
+
+
+// Did nothing!!!
+/// CHANGE everything
