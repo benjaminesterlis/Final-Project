@@ -46,6 +46,18 @@
 		} \
 	} while(0)
 
+#define SET_MESSAGE_RET(msg, msg_val, ret) \
+do { \
+	msg = msg_val; \
+	return ret; \
+} while(0)
+
+#define CHECK(cond,func) \ 
+do { \
+	if(!cond) \
+		func; \
+} while(0)
+
 #define O_RONLY "r"
 #define	SP_DIR "spImagesDirectory"
 #define	SP_PRE "spImagesPrefix"
@@ -562,4 +574,23 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filen
 	}
 	printf("File:%s\nLine%d\nInvalid value-constraint not met", filename, line);
 	return SP_CONFIG_WRONG_FIELD_NAME;
+}
+
+char* spGetImagePreffix(const spConfig config, SP_CONFIG_MSG msg)
+{
+	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	return config->spImagesPrefix;
+}
+
+
+char* spGetImageSuffix(const spConfig config, SP_CONFIG_MSG msg)
+{
+	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	return config->spImagesSuffix;
+}
+
+char* spGetImageDirectroy(const spConfig config, SP_CONFIG_MSG msg)
+{
+	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	return config->spImagesDirectory;
 }

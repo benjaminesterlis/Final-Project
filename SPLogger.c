@@ -126,8 +126,8 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char* msg)
 void spLoggerDestroy() {
 	if (!logger) 
 		return;
-	if (!logger->isStdOut)//Close file only if not stdout
+	if (!logger->isStdOut) // Close file only if not stdout
 		fclose(logger->outputChannel);
-	free(logger);//free allocation
+	free(logger); // free allocation
 	logger = NULL;
 }

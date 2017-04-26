@@ -24,7 +24,9 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_INDEX_OUT_OF_RANGE,
 	SP_CONFIG_WRONG_FIELD_NAME,
 	SP_CONFIG_DOUBLE_USED_VAR,
-	SP_CONFIG_SUCCESS
+	SP_CONFIG_NULL_POINTER,
+	SP_CONFIG_SUCCESS,
+	SP_CONFIG_WRITE_FAILURE,
 } SP_CONFIG_MSG;
 
 typedef struct sp_config_t* SPConfig;
@@ -55,6 +57,7 @@ typedef struct sp_config_t* SPConfig;
  * - SP_CONFIG_INVALID_ENUM - in case no such filed named * in enum
  * - SP_CONFIG_WRONG_FIELD_NAME - if no such filed name as entered name
  * - SP_CONFIG_DOUBLE_USED_VAR - if one varialbe updated twice
+ * - SP_CONFIG_NULL_POINTER - if NULL pointer is given
  * - SP_CONFIG_SUCCESS - in case of success
  *
  */
@@ -180,6 +183,12 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 void spConfigDestroy(SPConfig config);
 
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
+
+char* spGetImagePreffix(const spConfig config, SP_CONFIG_MSG msg);
+
+char* spGetImageSuffix(const spConfig config, SP_CONFIG_MSG msg);
+
+char* spGetImageDirectroy(const spConfig config, SP_CONFIG_MSG msg);
 
 
 #endif /* SPCONFIG_H_ */
