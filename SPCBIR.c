@@ -9,16 +9,20 @@
 #define DEFUALT "spcbir.config"
 #define CONFIG ".config"
 #define CONF_SIZE 7
-#define INVALID_COMMAND "invalid command line: use -c <config_filename>"
-#define INVALID_CONFIG "invlaid configuration file: %s couldn't be open"
-#define DEFUALT_CONFIG "The default configuration file %s couldn’t be open"
+#define INVALID_COMMAND "invalid command line: use -c <config_filename>\n"
+#define INVALID_CONFIG "invlaid configuration file: %s couldn't be open\n"
+#define DEFUALT_CONFIG "The default configuration file %s couldn’t be open\n"
 #define FEAT ".feat"
 #define O_RDONLY "r"
 #define O_WRONLY "w"
 #define O_RDWR "r+"
-#define EXTRACT_ERROR "Extraction Error!"
-#define BUILD_ERROR "Build Data instrcution Error!"
-#define READ_ERROR "Reading Error!"
+#define EXTRACT_ERROR "Extraction Error!\n"
+#define BUILD_ERROR "Build Data instrcution Error!\n"
+#define READ_ERROR "Reading Error!\n"
+#define OPEN_ERROR "Opening Error!\n"
+#define MALLOC_ERROR "Allocation Error!\n"
+#define KDTREE_INIT_ERROR "KDTreeInit Error!\n"
+#define EXIT "Exting...\n"
 
 #define SEND_ERROR( fmt, ...) \
 do { \
@@ -32,6 +36,8 @@ do { \
 	if (!(cond)) \
 		SEND_ERROR("%s" ,##__VA__ARGS__); \
 } while(0)
+
+#define CHECK_NOT(cond, ...) CHECK_RET(!(cond), __VA__ARGS__)
 
 #define MSG_NOT_SUCCESS(msg, error) \
 do { \
@@ -64,16 +70,41 @@ do { \
 } while(0)
 
 
+
+/******************** GLOBAL VARIABLE ********************/
+static ImageProc proc = NULL;
+
 /********************* MAIN *********************/
 
 int main(int argc, char const *argv[])
 {
 	char* file_name = DEFUALT;
-	FILE* conf_file;
+	FILE* conf_file = NULL;
+	FILE* new_image_file = NULL;
 	int ret = 0;
-	SP_CONFIG_MSG msg;
+	SP_CONFIG_MSG msg = NULL;
+	SPPoint*** features = NULL;
+	int points_done = 0;
 	const SPConfig confing = NULL;
-	
+	SPPoint** total_features = NULL;
+	int total_n_feature = 0;
+	int* num_feat_arr = NULL;
+	KDTreeNode* root = NULL;
+	int num_of_images;
+	int pos = 0;
+	int flag = 0;
+	int new_n_feat;
+	char* new_image_path;
+	SPBPQueue bqp = NULL;
+	SPPOint** QeuryImage = NULL;
+	int* images_indexes = NULL;
+	int K_close;
+
+
+
+	num_of_images = spConfigGetNumOfImages(conf, msg);
+	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+
 	/********************** Start **********************/
 	if (argc != 3 && argc != 1)
 		SEND_ERROR("%s", INVALID_COMMAND);
@@ -84,7 +115,10 @@ int main(int argc, char const *argv[])
 		CHECK_RET(check_file_name(argv[2]), "ERROR, file format is *.config");	
 		file_name = argv[2];
 	}
+
 	/**********************INIT from  Config **********************/
+
+
 	conf = spConfigCreate(conf_file, msg);
 	if (conf == NULL)
 	{
@@ -98,18 +132,90 @@ int main(int argc, char const *argv[])
 				break;
 		}
 	}
+	fclose(conf_file);
+		
+	proc = ImageProc(conf);
 
 	// check if need to extact data to file
 	if (spConfigIsExtractionMode(conf, msg))
 	 	CHECK_RET(extraction_mode(conf), EXTRACT_ERROR);
 
-	// read from file
- 	CHECK_RET(read_features(conf), BUILD_ERROR);
+	// craete SPPoints matrix each line for each image
+	CHECK_RET(faetures = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
+
+	for ( i = 0; i < num_of_images; i++){
+	 	CHECK_RET(features[i] = read_features(conf, i, &num_feat_arr), BUILD_ERROR);
+	 	total_n_feature += num_feat_arr[i];
+	}
+
+	CHECK_RET(total_features = (SPPoint**)malloc(sizeof(SPPoint*) * total_n_feature), MALLOC_ERROR);
+	
+	//convert the matix to array
+	for(i = 0; i < num_of_images; i++)
+		for(j = 0; j < num_feat_arr[i]; j++, pos++)
+			total_features[pos] = features[i][j];
+	flag = 1;
+
+	CHECK_NOT(KDTreeInit(total_features, root, spConfigGetSplitMethod(conf), 0), KDTREE_INIT_ERROR);
+
+	CHECK_RET( images_indexes = (int*)malloc(sizeof(int) * size), MALLOC_ERROR);
+
+	/***************************** QUERY MODE *****************************/
+	while(1)
+	{
+		printf("Please enter an image path:\n");
+		scanf("%s",new_image_path);
+		CHECK_RET(strcmp(new_image_path, "<>"), EXIT);
+		new_n_feat = spConfigGetNumOfFeatures(conf);
+		QeuryImage = getImageFeatures(new_image_path, -1, &new_n_feat);
+
+		// to choose the closest images
+		for ( i = 0; i < new_n_feat; i++){
+			indexes = best_indexes(QeurtImage[i], root, bpq, size);
+			for (j = 0; j < size; j++)
+				images_indexes[indexes[j]]++;
+
+			free(indexes);
+		}
+
+		CHECK_RET(indexes = (int*)malloc(size *sizeof(long)), MALLOC_ERROR);
+		// unsigned long mask = -1 //0xffffffffffffffff
+		for (i = 0; i < size; ++i)
+			to_sort[i] = extend(images_indexes[i], i);
+		qsort(to_sort, size, sizeof(long), _mine_cmp);
+		for (i = 0; i < count; ++i)
+			t
+		
+	}
 
 CLEANUP:
+	// if(flag == 1)
+	// {
+	// 	for ( i = 0; i < pos; i++)
+	// 		spPointDestroy(total_features[pos]);
+	// 	free(total_features);
+	// 	free(features);
+	// } 
+	// else
+	// {
+
+	// }
 	return ret;
 }
+int get_least_ms_dword(long qword)
+{	
+	unsigned long mask = -1;
+	mask = (mask >> 32);
+	return (int)(qword & mask);
+}
 
+long extend(int most_seg_dword, int least_seg_dword)
+{
+	long l = (long)most_seg_dword;
+	l = l << 32;
+	l += least_seg_dword;
+	return l;
+}
 
 // the last letter must be .config which is 7
 // check if the type is .config type	
@@ -168,7 +274,7 @@ int extraction_mode(const SPConfig conf)
 	{
 		// open image file & get features
 		sprintf(img_path, "%s%s%d%s",dir, suffix, i, prefix);
-		features = getImageFeatures(img_path, i, &num_of_features);
+		features = proc.getImageFeatures(img_path, i, &num_of_features);
 		
 		// open feature file.
 		sprintf(feature_path, "%s%s%d%s",dir, suffix, i, FEAT);
@@ -176,8 +282,8 @@ int extraction_mode(const SPConfig conf)
 
 		// each image will have her own file with the following format:
 		// numOfFeatures # dimForAllPoints @ IndexForAllPoints
-		fprintf(image_file, "%d#", num_of_features);
-		sprintf(data, "%d@%d&", spPointGetDimension(features[i]), i); // index is the image number
+		fprintf(image_file, "%d", num_of_features);
+		sprintf(data, "%d%d", spPointGetDimension(features[i]), spPointGetIndex(features[i]));
 
 		// write each feature
 		for (j = 0; j < num_of_features; j++)
@@ -209,53 +315,84 @@ int magic_func(SPPoint* p, char* buf)
 	return read;
 }
 
-int read_features(const SPConfig conf)
+SPPoint** read_features(const SPConfig conf, int index, int* num)
+{
+	int ret = 0;
+	int j;
+	int dim, index;
+	int num_of_images;
+	FILE* feature_file;
+	char* prefix;
+	char* dir;
+	char* path;
+	SPPoint** features;
+	SP_CONFIG_MSG msg;
+
+	prefix = spGetImagePreffix(conf, msg);
+	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+
+	dir = spGetImageDirectory(conf, msg);
+	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+
+	// create the path to the file to open
+	sprintf(path, "%s%s%d%s", dir, prefix, index, FEAT);
+
+	// open file
+	CHECK_RET( OPEN(feature_file, path, O_RDONLY, ,msg , NULL), OPEN_ERROR);
+
+	// first dword is num_of features
+	CHECK_RET(READ(feature_file, &num_of_features, sizeof(int), 1, msg, NULL), READ_ERROR);  
+	
+	// second dword is dim
+	CHECK_RET(READ(feature_file, &dim, sizeof(int), 1, msg, NULL), READ_ERROR);
+
+	// third dword is index
+	CHECK_RET(READ(feature_file, &index, sizeof(int), 1, msg, NULL), READ_ERROR);
+
+	// malloc featuers array
+	CHEK_RET(features = (SPPoint**)malloc(sizeof(SPPoint*) * num_of_features), MALLOC_ERROR);
+
+
+	for ( j = 0; j < num_of_features; j++)
+	{
+		CHECK_RET(READ(feature_file, &data, sizeof(double), dim, msg, NULL), READ_ERROR);
+		faetures[j] = spPointCreate(data, dim, index);
+		*num++;
+	}
+
+CLEANUP:
+	if (!feature_file)
+		close(feature_file);
+	if (ret == -1)
+		return NULL;
+	return features;
+}
+
+
+int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size)
 {
 	int ret = 0;
 	int i;
-	int num_of_images;
-	SPPoint*** arr = NULL;
-	FILE* feature_file;
+	SP_BPQUEUE_MSG msg;
+	BPQueueElement* elem;
 
-	for( i = 0; i < num_of_images; i++){
-		for ( j = 0; j < num_of_features; j++){
-
-		}
-		arr[i] = read_feature(feature_file, conf)
+	CHECK_RET( indexes = (int*)malloc(sizeof(int) * size), MALLOC_ERROR);
+	
+	CHECK_RET(kNearestNeighbors(root, bpq, feature, size),"");
+	for (i = 0; i < size; i++){
+		msg = spBPQueuePeek(bpq, elem);
+		indexes[i] = spBPQueueElementGetIndex(elem);
 	}
-
 
 CLEANUP:
 	return ret;
 }
 
-
-
-
-/* 
- * Assume file is open
- */
-SPPoint* read_feature(FILE* file){
-
-	SPPoint* feature; //malloc
-	char* ch;
-	int dim;
-	int index;
-	data* coors;
-	double place_holder;	
-	
-	CHECK_RET(fread(place_holder, sizeof(int), 1, FILE), READ_ERROR);
-	while( (ch = getc(file)) != EOF)
-	{
-
-	}
-
-
-CLEANUP:
-	return feature; 
+int _mine_cmp(const void* a, const void *b)
+{
+	int* aa;
+	int* bb;
+	*aa = (int)(*(long *) a >> 32));
+	*bb = (int)(*(long *) b >> 32));
+   	return ( *(int*)a - *(int*)b );
 }
-
-
-
-// Did nothing!!!
-/// CHANGE everything

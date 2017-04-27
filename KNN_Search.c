@@ -41,8 +41,6 @@ int kNearestNeighbors_Recursive(KDTreeNode* curr, SPBPQueue* bpq, SPPoint* p)
 			LeftSize(curr, bpq, p)	
 	}
 	return 0;
-
-
 }
 
 int kNearestNeighbors(KDTreeNode* curr, SPBPQueue* bpq, SPPoint* p, int size)

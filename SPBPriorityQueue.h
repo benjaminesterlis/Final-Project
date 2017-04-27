@@ -186,7 +186,9 @@ bool spBPQueueIsFull(SPBPQueue* source);
  * if axis is 2 print both. 
  */
 void printq(SPBPQueue* source,int axis);
+
 int spBPQueueMinValueIndex(SPBPQueue* source);
 
+int spBPQueueElementGetIndex (BPQueueElement *elem);
 
 #endif

@@ -594,3 +594,9 @@ char* spGetImageDirectroy(const spConfig config, SP_CONFIG_MSG msg)
 	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spImagesDirectory;
 }
+
+int spGetImageKNN(const spConfig config, SP_CONFIG_MSG msg)
+{
+	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	return config->spKNN;
+}

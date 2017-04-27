@@ -352,3 +352,12 @@ int spBPQueueMinValueIndex(SPBPQueue* source)
 		return -1;
 	return source->elements[source->size - 1].index;//the last element it the lowest.
 }
+
+int spBPQueueElementGetIndex (BPQueueElement *elem)
+{
+	if (!elem)
+	{
+		return -1;
+	}
+	return elem->index;
+}
