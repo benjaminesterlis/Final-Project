@@ -1,0 +1,124 @@
+g++ -std=c++11 -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -I/usr/local/lib/opencv-3.1.0/include/ -c main.cpp
+main.cpp: In function 'int main(int, const char**)':
+main.cpp:81:2: error: 'ImageProc' was not declared in this scope
+  ImageProc proc = NULL;
+  ^
+main.cpp:81:2: note: suggested alternative:
+In file included from main.cpp:7:0:
+SPImageProc.h:17:7: note:   'sp::ImageProc'
+ class ImageProc {
+       ^
+main.cpp:81:12: error: expected ';' before 'proc'
+  ImageProc proc = NULL;
+            ^
+main.cpp:10:17: error: deprecated conversion from string constant to 'char*' [-Werror=write-strings]
+ #define DEFUALT "spcbir.config"
+                 ^
+main.cpp:82:20: note: in expansion of macro 'DEFUALT'
+  char* file_name = DEFUALT;
+                    ^
+In file included from /usr/include/time.h:37:0,
+                 from /usr/include/pthread.h:24,
+                 from /usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr-default.h:35,
+                 from /usr/include/x86_64-linux-gnu/c++/4.8/bits/gthr.h:148,
+                 from /usr/include/c++/4.8/ext/atomicity.h:35,
+                 from /usr/include/c++/4.8/bits/basic_string.h:39,
+                 from /usr/include/c++/4.8/string:52,
+                 from /usr/include/c++/4.8/random:41,
+                 from /usr/include/c++/4.8/bits/stl_algo.h:65,
+                 from /usr/include/c++/4.8/algorithm:62,
+                 from /usr/local/lib/opencv-3.1.0/include/opencv2/core/base.hpp:53,
+                 from /usr/local/lib/opencv-3.1.0/include/opencv2/core.hpp:54,
+                 from SPImageProc.h:3,
+                 from main.cpp:7:
+main.cpp:86:22: error: invalid conversion from 'long int' to 'SP_CONFIG_MSG {aka sp_config_msg_t}' [-fpermissive]
+  SP_CONFIG_MSG msg = NULL;
+                      ^
+main.cpp:93:2: error: 'KDTreeNode' was not declared in this scope
+  KDTreeNode* root = NULL;
+  ^
+main.cpp:93:14: error: 'root' was not declared in this scope
+  KDTreeNode* root = NULL;
+              ^
+main.cpp:99:2: error: 'SPBPQueue' was not declared in this scope
+  SPBPQueue* bqp = NULL;
+  ^
+main.cpp:99:13: error: 'bqp' was not declared in this scope
+  SPBPQueue* bqp = NULL;
+             ^
+main.cpp:100:2: error: 'SPPOint' was not declared in this scope
+  SPPOint** QeuryImage = NULL;
+  ^
+main.cpp:100:12: error: 'QeuryImage' was not declared in this scope
+  SPPOint** QeuryImage = NULL;
+            ^
+main.cpp:105:34: error: 'conf' was not declared in this scope
+  is_minimal = spConfigMinimalGui(conf, msg)
+                                  ^
+main.cpp:47:1: error: expected ';' before 'do'
+ do { \
+ ^
+main.cpp:106:2: note: in expansion of macro 'MSG_NOT_SUCCESS'
+  MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
+  ^
+main.cpp:82:8: error: unused variable 'file_name' [-Werror=unused-variable]
+  char* file_name = DEFUALT;
+        ^
+main.cpp:83:8: error: unused variable 'conf_file' [-Werror=unused-variable]
+  FILE* conf_file = NULL;
+        ^
+main.cpp:84:8: error: unused variable 'new_image_file' [-Werror=unused-variable]
+  FILE* new_image_file = NULL;
+        ^
+main.cpp:85:6: error: unused variable 'ret' [-Werror=unused-variable]
+  int ret = 0;
+      ^
+main.cpp:87:13: error: unused variable 'features' [-Werror=unused-variable]
+  SPPoint*** features = NULL;
+             ^
+main.cpp:88:6: error: unused variable 'points_done' [-Werror=unused-variable]
+  int points_done = 0;
+      ^
+main.cpp:89:17: error: unused variable 'confing' [-Werror=unused-variable]
+  const SPConfig confing = NULL;
+                 ^
+main.cpp:90:12: error: unused variable 'total_features' [-Werror=unused-variable]
+  SPPoint** total_features = NULL;
+            ^
+main.cpp:91:6: error: unused variable 'total_n_feature' [-Werror=unused-variable]
+  int total_n_feature = 0;
+      ^
+main.cpp:92:7: error: unused variable 'num_feat_arr' [-Werror=unused-variable]
+  int* num_feat_arr = NULL;
+       ^
+main.cpp:94:6: error: unused variable 'num_of_images' [-Werror=unused-variable]
+  int num_of_images;
+      ^
+main.cpp:95:6: error: unused variable 'pos' [-Werror=unused-variable]
+  int pos = 0;
+      ^
+main.cpp:96:6: error: unused variable 'flag' [-Werror=unused-variable]
+  int flag = 0;
+      ^
+main.cpp:97:6: error: unused variable 'new_n_feat' [-Werror=unused-variable]
+  int new_n_feat;
+      ^
+main.cpp:98:8: error: unused variable 'new_image_path' [-Werror=unused-variable]
+  char* new_image_path;
+        ^
+main.cpp:101:7: error: unused variable 'images_indexes' [-Werror=unused-variable]
+  int* images_indexes = NULL;
+       ^
+main.cpp:102:6: error: unused variable 'K_close' [-Werror=unused-variable]
+  int K_close;
+      ^
+main.cpp:441:1: error: expected '}' at end of input
+ }
+ ^
+main.cpp: At global scope:
+main.cpp:79:5: error: unused parameter 'argc' [-Werror=unused-parameter]
+ int main(int argc, char const *argv[])
+     ^
+main.cpp:79:5: error: unused parameter 'argv' [-Werror=unused-parameter]
+cc1plus: all warnings being treated as errors
+make: *** [main.o] Error 1

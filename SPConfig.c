@@ -1,4 +1,4 @@
-#include  "SPConfig.h"
+#include "SPConfig.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -576,26 +576,26 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filen
 	return SP_CONFIG_WRONG_FIELD_NAME;
 }
 
-char* spGetImagePreffix(const spConfig config, SP_CONFIG_MSG msg)
+char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG msg)
 {
 	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spImagesPrefix;
 }
 
 
-char* spGetImageSuffix(const spConfig config, SP_CONFIG_MSG msg)
+char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG msg)
 {
 	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spImagesSuffix;
 }
 
-char* spGetImageDirectroy(const spConfig config, SP_CONFIG_MSG msg)
+char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG msg)
 {
 	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spImagesDirectory;
 }
 
-int spGetImageKNN(const spConfig config, SP_CONFIG_MSG msg)
+int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG msg)
 {
 	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spKNN;

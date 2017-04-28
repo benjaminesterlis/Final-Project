@@ -10,6 +10,7 @@
  */
 
 typedef enum sp_config_msg_t {
+	SP_CONFIG_SUCCESS,
 	SP_CONFIG_MISSING_DIR,
 	SP_CONFIG_MISSING_PREFIX,
 	SP_CONFIG_MISSING_SUFFIX,
@@ -25,7 +26,6 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_WRONG_FIELD_NAME,
 	SP_CONFIG_DOUBLE_USED_VAR,
 	SP_CONFIG_NULL_POINTER,
-	SP_CONFIG_SUCCESS,
 	SP_CONFIG_WRITE_FAILURE,
 } SP_CONFIG_MSG;
 
@@ -184,12 +184,12 @@ void spConfigDestroy(SPConfig config);
 
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 
-char* spGetImagePreffix(const spConfig config, SP_CONFIG_MSG msg);
+char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG msg);
 
-char* spGetImageSuffix(const spConfig config, SP_CONFIG_MSG msg);
+char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG msg);
 
-char* spGetImageDirectroy(const spConfig config, SP_CONFIG_MSG msg);
+char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG msg);
 
-int spConfigNumOfSimilarImages(const spConfig config, SP_CONFIG_MSG msg);
+int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG msg);
 #endif /* SPCONFIG_H_ */
 

@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stirng,h>
+#include <string.h>
 #include <errno.h>
-#include "SPConfig" 
+#include "SPConfig.h"
+#include "SPImageProc.h"
 
 #define C "-c"
 #define DEFUALT "spcbir.config"
@@ -29,7 +30,7 @@
 
 #define SEND_ERROR( fmt, ...) \
 do { \
-	printf(fmt, ##__VA__ARGS__); \
+	printf(fmt, __VA__ARGS__); \
 	ret = -1; /* the return value of the main fucntion :)*/ \
 	goto CLEANUP; \
 } while(0)
@@ -37,14 +38,14 @@ do { \
 #define CHECK_RET(cond, ...) \
 do { \
 	if (!(cond)) \
-		SEND_ERROR("%s" ,##__VA__ARGS__); \
+		SEND_ERROR("%s" , __VA__ARGS__); \
 } while(0)
 
 #define CHECK_NOT(cond, ...) CHECK_RET(!(cond), __VA__ARGS__)
 
 #define MSG_NOT_SUCCESS(msg, error) \
 do { \
-	if (msg != SP_CONFIG_SUCCESS) \
+	if (msg) \
 		SEND_ERROR("%s", error); \
 } while(0)
 
@@ -53,7 +54,7 @@ do { \
 	if(!(cond)) \
 	{ \
 		msg = val_msg; \
-		SEND_ERROR(""); \
+		SEND_ERROR("",""); \
 	} \
 } while(0)
 
@@ -68,7 +69,7 @@ do { \
 } while(0);
 
 #define WRITE(fstream, buffer, size, nitem, msg, val_msg) \
-do { \ 
+do { \
 	CHECK_MSG_RET(fwrite(buffer, size, nitem, fstream) < (size_t)nitem, msg, val_msg); \
 } while(0)
 
@@ -101,8 +102,10 @@ int main(int argc, char const *argv[])
 	int K_close;
 	bool is_minimal;
 
-	MSG_NOT_SUCCESS(is_minimal = spConfigMinimalGui(conf, msg))
-	MSG_NOT_SUCCESS(K_close = spConfigNumOfSimilarImages(conf, msg), NULL_POINTER_ERROR);
+	is_minimal = spConfigMinimalGui(conf, msg)
+	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
+	K_close = spConfigNumOfSimilarImages(conf, msg)
+	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
 
 	num_of_images = spConfigGetNumOfImages(conf, msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
@@ -168,7 +171,8 @@ int main(int argc, char const *argv[])
 		printf("Please enter an image path:\n");
 		scanf("%s",new_image_path);
 		CHECK_RET(strcmp(new_image_path, "<>"), EXIT);
-		MSG_NOT_SUCCESS (new_n_feat = spConfigGetNumOfFeatures(conf, msg));
+		new_n_feat = spConfigGetNumOfFeatures(conf, msg)
+		MSG_NOT_SUCCESS (msg, "Error, in spConfigGetNumOfFeatures");
 		QeuryImage = getImageFeatures(new_image_path, -1, &new_n_feat);
 
 		// to choose the closest images
@@ -356,7 +360,7 @@ SPPoint** read_features(const SPConfig conf, int index, int* num)
 	sprintf(path, "%s%s%d%s", dir, prefix, index, FEAT);
 
 	// open file
-	CHECK_RET( OPEN(feature_file, path, O_RDONLY, ,msg , NULL), OPEN_ERROR);
+	CHECK_RET( OPEN(feature_file, path, O_RDONLY ,msg , NULL), OPEN_ERROR);
 
 	// first dword is num_of features
 	CHECK_RET(READ(feature_file, &num_of_features, sizeof(int), 1, msg, NULL), READ_ERROR);  
