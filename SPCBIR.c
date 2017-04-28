@@ -23,6 +23,9 @@
 #define MALLOC_ERROR "Allocation Error!\n"
 #define KDTREE_INIT_ERROR "KDTreeInit Error!\n"
 #define EXIT "Exting...\n"
+#define SRTCMP_ERROR "Strcmp Error!\n"
+#define WRONG_FORMAT_ERROR "file is not .config Error!\n"
+#define NULL_POINTER_ERROR "NULL pointer Error!\n"
 
 #define SEND_ERROR( fmt, ...) \
 do { \
@@ -70,14 +73,11 @@ do { \
 } while(0)
 
 
-
-/******************** GLOBAL VARIABLE ********************/
-static ImageProc proc = NULL;
-
 /********************* MAIN *********************/
 
 int main(int argc, char const *argv[])
 {
+	ImageProc proc = NULL;
 	char* file_name = DEFUALT;
 	FILE* conf_file = NULL;
 	FILE* new_image_file = NULL;
@@ -95,12 +95,14 @@ int main(int argc, char const *argv[])
 	int flag = 0;
 	int new_n_feat;
 	char* new_image_path;
-	SPBPQueue bqp = NULL;
+	SPBPQueue* bqp = NULL;
 	SPPOint** QeuryImage = NULL;
 	int* images_indexes = NULL;
 	int K_close;
+	bool is_minimal;
 
-
+	MSG_NOT_SUCCESS(is_minimal = spConfigMinimalGui(conf, msg))
+	MSG_NOT_SUCCESS(K_close = spConfigNumOfSimilarImages(conf, msg), NULL_POINTER_ERROR);
 
 	num_of_images = spConfigGetNumOfImages(conf, msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
@@ -111,8 +113,8 @@ int main(int argc, char const *argv[])
 
 	if (argc == 3)
 	{
-		CHECK_RET(strcmp(argv[1], C), "ERROR, strcmp");
-		CHECK_RET(check_file_name(argv[2]), "ERROR, file format is *.config");	
+		CHECK_RET(strcmp(argv[1], C), SRTCMP_ERROR);
+		CHECK_RET(check_file_name(argv[2]), WRONG_FORMAT_ERROR);	
 		file_name = argv[2];
 	}
 
@@ -150,7 +152,7 @@ int main(int argc, char const *argv[])
 
 	CHECK_RET(total_features = (SPPoint**)malloc(sizeof(SPPoint*) * total_n_feature), MALLOC_ERROR);
 	
-	//convert the matix to array
+	//convert the matrix to array
 	for(i = 0; i < num_of_images; i++)
 		for(j = 0; j < num_feat_arr[i]; j++, pos++)
 			total_features[pos] = features[i][j];
@@ -158,7 +160,7 @@ int main(int argc, char const *argv[])
 
 	CHECK_NOT(KDTreeInit(total_features, root, spConfigGetSplitMethod(conf), 0), KDTREE_INIT_ERROR);
 
-	CHECK_RET( images_indexes = (int*)malloc(sizeof(int) * size), MALLOC_ERROR);
+	CHECK_RET(images_indexes = (int*)malloc(sizeof(int) * num_of_images), MALLOC_ERROR);
 
 	/***************************** QUERY MODE *****************************/
 	while(1)
@@ -166,26 +168,41 @@ int main(int argc, char const *argv[])
 		printf("Please enter an image path:\n");
 		scanf("%s",new_image_path);
 		CHECK_RET(strcmp(new_image_path, "<>"), EXIT);
-		new_n_feat = spConfigGetNumOfFeatures(conf);
+		MSG_NOT_SUCCESS (new_n_feat = spConfigGetNumOfFeatures(conf, msg));
 		QeuryImage = getImageFeatures(new_image_path, -1, &new_n_feat);
 
 		// to choose the closest images
 		for ( i = 0; i < new_n_feat; i++){
-			indexes = best_indexes(QeurtImage[i], root, bpq, size);
-			for (j = 0; j < size; j++)
+			indexes = best_indexes(QeurtImage[i], root, bpq, KNN_features);
+			for (j = 0; j < KNN_features; j++)
 				images_indexes[indexes[j]]++;
 
 			free(indexes);
 		}
 
-		CHECK_RET(indexes = (int*)malloc(size *sizeof(long)), MALLOC_ERROR);
+		CHECK_RET(to_sort = (long*)malloc(sizeof(long) * num_of_images), MALLOC_ERROR);
+		CHECK_RET(indexes = (int*)malloc(sizeof(int) * K_close), MALLOC_ERROR);
+	
 		// unsigned long mask = -1 //0xffffffffffffffff
-		for (i = 0; i < size; ++i)
+		// set integers for special sorting style	
+		for (i = 0; i < num_of_images; ++i)
 			to_sort[i] = extend(images_indexes[i], i);
-		qsort(to_sort, size, sizeof(long), _mine_cmp);
-		for (i = 0; i < count; ++i)
-			t
-		
+
+		// take the KNN closest images
+		qsort(to_sort, num_of_images, sizeof(long), _mine_cmp);
+		// take only k_close images as we need
+		for (i = 0; i < K_close; ++i)
+			indexes[i] = get_least_ms_dword(to_sort[i]);
+		free(to_sort);
+
+		/**************************** SHOW RESULT ****************************/
+
+		if(is_minimal)
+			ShowMinimalResult(indexes, prefix, suffix, dir, K_close, proc);
+		else
+			ShowNonMinimalResult(new_image_path, indexes, prefix, suffix, dir , K_close);
+	
+		/**************************** Done image ****************************/
 	}
 
 CLEANUP:
@@ -202,6 +219,7 @@ CLEANUP:
 	// }
 	return ret;
 }
+
 int get_least_ms_dword(long qword)
 {	
 	unsigned long mask = -1;
@@ -227,7 +245,7 @@ int check_file_name(char* file_name)
 	return -1;
 }
 
-int extraction_mode(const SPConfig conf)
+int extraction_mode(const SPConfig conf, ImageProc proc)
 {
 
 	/* need to open new files .feat and copy 
@@ -395,4 +413,25 @@ int _mine_cmp(const void* a, const void *b)
 	*aa = (int)(*(long *) a >> 32));
 	*bb = (int)(*(long *) b >> 32));
    	return ( *(int*)a - *(int*)b );
+}
+
+void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, ImageProc proc)
+{
+	char* image_path;
+	int i;
+	for( printf(""), i = 0; i < size, i++)
+	{
+		sprintf(image_path, "%s%s%d%s", dir, prefix, pic_indexes[i], suffix);
+		proc.ShowImage(image_path);
+	}
+}
+
+void ShowNonMinimalResult(char* q_image_path, int* pic_indexes, char* prefix, char* suffix, char* dir, int size)
+{
+	int i;
+	char* image_path;
+	
+	printf("%s\n", q_image_path);
+	for (i = 0; i < size; ++i)
+		printf("%s%s%d%s\n", dir, prefix, pic_indexes[i], suffix );
 }

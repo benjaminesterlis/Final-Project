@@ -190,6 +190,6 @@ char* spGetImageSuffix(const spConfig config, SP_CONFIG_MSG msg);
 
 char* spGetImageDirectroy(const spConfig config, SP_CONFIG_MSG msg);
 
-
+int spConfigNumOfSimilarImages(const spConfig config, SP_CONFIG_MSG msg);
 #endif /* SPCONFIG_H_ */
 
