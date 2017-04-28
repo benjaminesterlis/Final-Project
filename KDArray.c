@@ -4,7 +4,7 @@
 #include <errno.h>
 #include "KDArray.h"
 
-
+#define LINE printf("~~~~~~~~~~~~~~~~~~~~ %d ~~~~~~~~~~~~~~~~~~~~\n", __LINE__);
 #define RND_HALF(num) (((num) % 2 == 0) ? (num) / 2 : (int)(0.5 + (float)(num) / 2))
 #define SEND_ERROR_NULL(error) \
 do { \
@@ -111,17 +111,6 @@ int need_To_Free_Split[12] = {0};
 */
 int need_To_Free_Init[5] = {0};
 
-// int printSPPoint (SPPoint* p)
-// {
-// 	int i = 0;
-// 	if( p == NULL)
-// 		SEND_ERROR("pointer is null");
-// 	printf("point Dim: %d\n",spPointGetDimension(p));
-// 	printf("point index :%d\n", spPointGetIndex(p));
-// 	for (i = 1; i < spPointGetDimension(p) + 1; i++)
-// 		printf("coordinate no: %d value is: %f\n", i, spPointGetAxisCoor(p, i));
-// 	return 0;
-// }
 
 void printMat(KDArray* kdarr)
 {
@@ -134,27 +123,6 @@ void printMat(KDArray* kdarr)
 	}
 }
 
-int printKDArray(KDArray* arr)
-{
-	printf("******************** Start printf kdarr ********************\n");
-	int i,j;
-	SPPoint* cer;
-
-	printf("Size is: %d\n", GetKDArraySize(arr));
-	printf("Dim is: %d\n", GetKDArrayDim(arr));
-	
-	for ( j = 0; j < arr->size; ++j){
-		printf("no. %d\t", j);
-		cer = arr->copied_arr[j];
-		printf("index: %d\n", spPointGetIndex(cer));
-	}
-	printf("Dim: %d\n", spPointGetDimension(arr->copied_arr[0]));
-	
-	printMat(arr);
-	printf("\n");
-	printf("******************** End printf kdarr ********************\n");
-	return 1;
-}
 
 KDArray* Init(SPPoint** arr, int size)
 {
@@ -177,7 +145,7 @@ KDArray* Init(SPPoint** arr, int size)
 	if((kdarr->copied_arr = (SPPoint**)malloc(sizeof(SPPoint*) * size)) == NULL)
 		SEND_ERROR_INIT("Error, Allocation failure");
 	need_To_Free_Init[1]++;
-
+	
 	for (i = 0; i < size; i++)
 	{			
 		if( (kdarr->copied_arr[i] = spPointCopy(arr[i])) == NULL)
@@ -189,11 +157,12 @@ KDArray* Init(SPPoint** arr, int size)
 		need_To_Free_Init[2]++;
 
 	}
+	
 	//malloc memory for the maxtrin with size of n * d.
 	if((kdarr->mat = (int**)malloc(sizeof(int*) * dim)) == NULL)
 		SEND_ERROR_INIT("Error, Allocation failure");
 	need_To_Free_Init[3]++;
-
+	
 	for (i = 0; i < dim; i++)
 	{
 		if((kdarr->mat[i] = (int*)malloc(sizeof(int) * size)) == NULL)
@@ -267,7 +236,7 @@ KDArray** split(KDArray* kdarr, int coor)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
 	need_To_Free_Split[1]++;
 
-	if((kdleft->mat = (int**)malloc(sizeof(kdleft->dim))) == NULL)
+	if((kdleft->mat = (int**)malloc(sizeof(int*) * kdleft->dim)) == NULL)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
 	need_To_Free_Split[2]++;
 
@@ -283,13 +252,13 @@ KDArray** split(KDArray* kdarr, int coor)
 	need_To_Free_Split[4]++;
 
 	kdright->dim = kdarr->dim;
-	kdright->size = kdarr->size - RND_HALF(kdarr->size);
+	kdright->size = kdarr->size -kdleft->size;
 	
 	if((kdright->copied_arr = (SPPoint**)malloc(kdright->size * sizeof(SPPoint*))) == NULL)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
 	need_To_Free_Split[5]++;
 
-	if((kdright->mat = (int**)malloc(sizeof(kdright->dim))) == NULL)
+	if((kdright->mat = (int**)malloc(sizeof(int*) * kdright->dim)) == NULL)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
 	need_To_Free_Split[6]++;
 
@@ -299,25 +268,24 @@ KDArray** split(KDArray* kdarr, int coor)
 		need_To_Free_Split[7]++;
 	}
  	/* ----------------------- Done Allocate ------------------------- */
-	
 	// set the reverse permutation of perm.
 	for (i = 0; i < kdarr->size; i++)
 		perm_reverse[perm[i]] = i;
-
+	
+	
 	// copy pointes in left side
 	for (i = 0; i < kdleft->size; i++){
 		if((kdleft->copied_arr[i] = spPointCopy(kdarr->copied_arr[perm[i]])) == NULL)
 			SEND_ERROR_SPLIT("Error, spPointCopy failue");
 		need_To_Free_Split[8]++;
 	}
-
 	// copy pointes in right side
 	for (i = 0; i < kdright->size; i++){
 		if((kdright->copied_arr[i] = spPointCopy(kdarr->copied_arr[perm[i + RND_HALF(kdarr->size)]]) ) == NULL)
 			SEND_ERROR_SPLIT("Error, spPointCopy failue");
 		need_To_Free_Split[9]++;
 	}
-
+	
 	// create both kdleft & kdright matrix field.
 	for (i = 0; i < kdarr->dim; i++) // for sort by what coordiante
 	{
@@ -325,26 +293,14 @@ KDArray** split(KDArray* kdarr, int coor)
  		Place_At_Right_i = 0;
 		for (j = 0; j < kdarr->size; j++) // to search over all points
 		{	
-			if(perm[kdarr->mat[i][j]] < RND_HALF(kdarr->size)){
-				kdleft->mat[i][Place_At_Left_i++] = kdarr->mat[i][j];
-			
-			// if(perm_reverse[j] < (RND_HALF(kdarr->size))) {
-			// 	// kdleft->mat[i][Place_At_Left_i++] = perm_reverse[j];
-			// 	kdleft->mat[i][Place_At_Left_i++] = kdarr->mat[i][j];
+			if(perm_reverse[kdarr->mat[i][j]] < RND_HALF(kdarr->size)){
+				kdleft->mat[i][Place_At_Left_i++] = perm_reverse[kdarr->mat[i][j]];
 			}
 			else{
-				// kdright->mat[i][Place_At_Right_i++] = perm_reverse[j] - RND_HALF(kdarr->size);
-				// kdright->mat[i][Place_At_Right_i++] = kdarr->mat[i][j] - RND_HALF(kdarr->size)];
-				kdleft->mat[i][Place_At_Left_i++] = kdarr->mat[i][j] - RND_HALF(kdarr->size);
-
+				kdright->mat[i][Place_At_Right_i++] = perm_reverse[kdarr->mat[i][j]] - RND_HALF(kdarr->size);
 			}
 		}
 	}
-
-
-	printKDArray(kdarr);
-	printKDArray(kdleft);
-	printKDArray(kdright);
 
 	if((total = (KDArray**)malloc( sizeof(KDArray*) * 2)) == NULL)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
