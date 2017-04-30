@@ -18,21 +18,21 @@ do { \
 #define CHECK_NOT(cond, error) CHECK_RET(!(cond), error)
 
 
-// int printSPPoint (SPPoint* p)
-// {
-// 	printf("******************** Start printf kdarr ********************\n");
-// 	int i = 0;
-// 	if( p == NULL)
-// 		SEND_ERROR("pointer is null");
-// 	printf("point Dim: %d\n",spPointGetDimension(p));
-// 	printf("point index :%d\n", spPointGetIndex(p));
-// 	for (i = 1; i < spPointGetDimension(p) + 1; i++)
-// 		printf("coordinate no: %d value is: %f\n", i, spPointGetAxisCoor(p, i));
+int printSPPoint (SPPoint* p)
+{
+	printf("******************** Start printf kdarr ********************\n");
+	int i = 0;
+	if( p == NULL)
+		SEND_ERROR("pointer is null");
+	printf("point Dim: %d\n",spPointGetDimension(p));
+	printf("point index :%d\n", spPointGetIndex(p));
+	for (i = 1; i < spPointGetDimension(p) + 1; i++)
+		printf("coordinate no: %d value is: %f\n", i, spPointGetAxisCoor(p, i));
 
-// 	printf("******************** End printf kdarr ********************\n");
+	printf("******************** End printf kdarr ********************\n");
 
-// 	return 0;
-// }
+	return 0;
+}
 
 int printKDArray(KDArray* arr)
 {

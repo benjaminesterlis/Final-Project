@@ -1,4 +1,6 @@
 #include "KDArray.h"
+#include <time.h>
+
 
 typedef struct sp_KDTreeNode_t{
 	struct sp_KDTreeNode_t* left;
@@ -12,7 +14,7 @@ typedef enum sp_KDTreeSplitMethod_t
 {
 	MAX_SPREAD,
 	RANDOM,
-	INCREMENTAL,
+	INCREMENTAL
 } KDTreeSplitMethod;
 
 

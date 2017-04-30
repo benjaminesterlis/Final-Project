@@ -29,22 +29,6 @@ do { \
 
 #define SEND_ERROR(error) { printf("Error!, line: %d, %s\n", __LINE__, error); return -1;}  
 
-int printSPPoint (SPPoint* p)
-{
-	printf("~~~~~~~~~~~~~~~~~~~~~ Start printf SPPoint ~~~~~~~~~~~~~~~~~~~~~\n");
-	int i = 0;
-	if( p == NULL)
-		SEND_ERROR("pointer is null");
-	printf("point Dim: %d\n",spPointGetDimension(p));
-	printf("point index :%d\n", spPointGetIndex(p));
-	for (i = 1; i < spPointGetDimension(p) + 1; i++)
-		printf("coordinate no: %d value is: %f\n", i, spPointGetAxisCoor(p, i));
-
-	printf("~~~~~~~~~~~~~~~~~~~~~ End printf SPPoint ~~~~~~~~~~~~~~~~~~~~~\n");
-
-	return 0;
-}
-
 int KDTreeInit (KDArray* arr, KDTreeNode** root, 
 				KDTreeSplitMethod split_method, int upper_level_dim)
 {
