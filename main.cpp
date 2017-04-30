@@ -4,7 +4,7 @@
 
 int main(int argc, char const *argv[])
 {
-	ImageProc proc = NULL;
+	ImageProc proc;
 	const char* file_name = DEFUALT;
 	FILE* conf_file = NULL;
 	FILE* new_image_file = NULL;
