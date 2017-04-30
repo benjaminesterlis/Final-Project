@@ -298,8 +298,8 @@ KDArray** split(KDArray* kdarr, int coor)
 	total[1] = kdright;
 
 	free(perm);
-	free(perm_reverse);
-	return total;
+	free(perm_reverse)
+;	return total;
 }
 
 

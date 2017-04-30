@@ -122,7 +122,10 @@ SPPoint* ExpendDim(SPPoint* p, double val);
 /*
  * Remove the last Dim from the point.
  */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0f580d670f22f950790d6e20f6d7fff0273ecf06
 SPPoint* DecreaseDim(SPPoint* p);
 
 /*
