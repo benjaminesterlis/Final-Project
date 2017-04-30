@@ -23,7 +23,7 @@
 #define NULL_POINTER_ERROR "NULL pointer Error!\n"
 
 
-extern "C"{
+extern "C" {
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <unistd.h>
