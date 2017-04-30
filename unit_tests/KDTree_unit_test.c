@@ -6,13 +6,19 @@
 #include "../KDTree.h"
 
 #define INIT_ERROR "KDTreeInit"
-#define POINT_NUM 5
+#define POINT_NUM 1
 #define DIM 3
 #define SEND_ERROR(error) { printf("Error!, line: %d, %s\n", __LINE__, error); return false;}  
 #define CHECK_RET(cond, error) \
 do { \
 	if (!(cond)) \
 		SEND_ERROR(error); \
+} while(0)
+#define FREE_POINTS_ARRAY(i, size, arr) \
+do { \
+	for ( i= 0; i< size; i++) \
+		spPointDestroy(arr[i]); \
+	free(arr); \
 } while(0)
 
 #define CHECK_NOT(cond, error) CHECK_RET(!(cond), error)
@@ -72,7 +78,7 @@ void printKDTree( KDTreeNode* root, int depth, int side)
 		printf("********************** Start Node at side %s depth: %d **********************\n", "right:", depth);
 	
 	// to check if leaf or not
-	if( getKDTreeData(root) != NULL){ /* not leaf */
+	if( getKDTreeData(root) != NULL){ /*leaf */
 		printSPPoint(getKDTreeData(root));
 	}
 	else {
@@ -95,7 +101,7 @@ void printKDTree( KDTreeNode* root, int depth, int side)
 static bool KDTreeSpeardTest()
 {
 	int i;
-	double data[POINT_NUM][DIM] = { {0,2,70}, {3,1,10}, {13,9,7}, {903,124,1001}, {18,37,48} };
+	double data[POINT_NUM][DIM] = { {0,2,70}, };
 	/*********************** Created KDArray ***********************/	
 	SPPoint** p_arr = (SPPoint**)malloc(sizeof(SPPoint*) * POINT_NUM);
 	for ( i = 0; i < POINT_NUM; ++i){
@@ -107,8 +113,10 @@ static bool KDTreeSpeardTest()
 	KDTreeNode* root;
 	CHECK_NOT(KDTreeInit(kdarr, &root, MAX_SPREAD, 0), INIT_ERROR);
 
-	printKDTree(root, 0, -1);
+	// printKDTree(root, 0, -1);
 	KDTreeNodeDestroy(root);
+
+	FREE_POINTS_ARRAY(i, POINT_NUM, p_arr);
 
 	return true;
 }

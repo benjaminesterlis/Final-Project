@@ -23,16 +23,6 @@ do { \
 	free(arr); \
 } while(0)
 
-void printMat(KDArray* kdarr)
-{
-	int i;
-	int j;
-	for (i = 0; i < kdarr->dim; i++){
-		for (j = 0; j < kdarr->size; j++)
-			printf("%d\t", kdarr->mat[i][j]);
-		printf("\n");
-	}
-}
 
 int printSPPoint (SPPoint* p)
 {

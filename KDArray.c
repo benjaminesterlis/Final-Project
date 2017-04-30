@@ -117,7 +117,7 @@ KDArray* Init(SPPoint** arr, int size)
 	KDArray* kdarr;
 	int Just4Free;	
 	int* Sorted_Coor_i;
-	int i, j;
+	int i;
 	int dim;
 	if (size <= 0)
 		return NULL;
