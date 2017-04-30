@@ -41,7 +41,6 @@ int main(int argc, char const *argv[])
 
 	/**********************INIT from  Config **********************/
 
-
 	conf = spConfigCreate(conf_file, msg);
 	if (conf == NULL)
 	{

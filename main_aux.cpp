@@ -26,7 +26,7 @@ int check_file_name(char* file_name)
 	return -1;
 }
 
-int extraction_mode(const SPConfig conf, ImageProc proc)
+int extraction_mode(const SPConfig conf, sp::ImageProc proc)
 {
 
 	/* need to open new files .feat and copy 
@@ -196,7 +196,7 @@ int _mine_cmp(const void* a, const void *b)
    	return ( *(int*)a - *(int*)b );
 }
 
-void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, ImageProc proc)
+void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc)
 {
 	char* image_path;
 	int i;

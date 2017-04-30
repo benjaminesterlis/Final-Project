@@ -87,7 +87,7 @@ long extend(int most_seg_dword, int least_seg_dword);
 
 int check_file_name(char* file_name);
 
-int extraction_mode(const SPConfig conf, ImageProc proc);
+int extraction_mode(const SPConfig conf, sp::ImageProc proc);
 
 int magic_func(SPPoint* p, char* buf);
 
@@ -97,6 +97,6 @@ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
 
 int _mine_cmp(const void* a, const void *b);
 
-void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, ImageProc proc);
+void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc);
 
 void ShowNonMinimalResult(char* q_image_path, int* pic_indexes, char* prefix, char* suffix, char* dir, int size);
