@@ -153,8 +153,6 @@ KDArray* Init(SPPoint** arr, int size)
 	
 	for (i = 0; i < dim; i++)
 	{
-		if((kdarr->mat[i] = (int*)malloc(sizeof(int) * size)) == NULL)
-			SEND_ERROR_INIT("Error, Allocation failure");
 		// Sort the points by each Coordinate and return thier order on the first order.
 		if((Sorted_Coor_i = spPointSortByIndex(kdarr->copied_arr, i, kdarr->size)) == NULL)
 			SEND_ERROR_INIT("Error, Sort by index failure");
@@ -163,6 +161,10 @@ KDArray* Init(SPPoint** arr, int size)
 		kdarr->mat[i] = Sorted_Coor_i;
 	}
 	
+	for (i = 0; i < size; i++)
+		if((kdarr->copied_arr[i] = DecreaseDim(kdarr->copied_arr[i])) == NULL)
+			SEND_ERROR_NULL("Error, Decrease dimention");
+
 	for (i = size - 1; i >= 0; i--)
 	{
 		// Set the real order of the points at the arr.
@@ -294,7 +296,10 @@ KDArray** split(KDArray* kdarr, int coor)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
 	total[0] = kdleft;
 	total[1] = kdright;
-	return total;
+
+	free(perm);
+	free(perm_reverse)
+;	return total;
 }
 
 
