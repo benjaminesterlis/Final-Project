@@ -5,7 +5,7 @@
 int main(int argc, char const *argv[])
 {
 	ImageProc proc = NULL;
-	char* file_name = DEFUALT;
+	const char* file_name = DEFUALT;
 	FILE* conf_file = NULL;
 	FILE* new_image_file = NULL;
 	int ret = 0;
@@ -27,14 +27,6 @@ int main(int argc, char const *argv[])
 	int* images_indexes = NULL;
 	int K_close;
 	bool is_minimal;
-
-	is_minimal = spConfigMinimalGui(conf, msg)
-	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-	K_close = spConfigNumOfSimilarImages(conf, msg)
-	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-
-	num_of_images = spConfigGetNumOfImages(conf, msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
 	/********************** Start **********************/
 	if (argc != 3 && argc != 1)
@@ -65,6 +57,13 @@ int main(int argc, char const *argv[])
 	}
 	fclose(conf_file);
 		
+	is_minimal = spConfigMinimalGui(conf, msg)
+	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
+	K_close = spConfigNumOfSimilarImages(conf, msg)
+	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
+	num_of_images = spConfigGetNumOfImages(conf, msg);
+	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+
 	proc = ImageProc(conf);
 
 	// check if need to extact data to file
