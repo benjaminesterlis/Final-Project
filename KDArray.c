@@ -112,18 +112,6 @@ int need_To_Free_Split[12] = {0};
 int need_To_Free_Init[5] = {0};
 
 
-void printMat(KDArray* kdarr)
-{
-	int i;
-	int j;
-	for (i = 0; i < kdarr->dim; i++){
-		for (j = 0; j < kdarr->size; j++)
-			printf("%d\t", kdarr->mat[i][j]);
-		printf("\n");
-	}
-}
-
-
 KDArray* Init(SPPoint** arr, int size)
 {
 	KDArray* kdarr;

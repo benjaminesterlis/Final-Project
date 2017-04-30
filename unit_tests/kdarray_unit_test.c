@@ -2,16 +2,34 @@
 #include <malloc.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "SPPoint.h"
-#include "KDArray.h"
+#include <stdbool.h>
+#include "../SPPoint.h"
+#include "../KDArray.h"
+#include "unit_test_util.h"
 
-#define POINT_NUM 5
-#define DIM 2
+#define POINT_NUM 6
+#define DIM 5
 #define SEND_ERROR(error) {printf("%s\n", (error)); exit(-1);}
+#define FREE_KDARRAY_ARRAY(i, size, arr) \
+do { \
+	for ( i = 0; i < size; i++) \
+		KDArrayDestroy(arr[i]); \
+} while(0) \
+
+void printMat(KDArray* kdarr)
+{
+	int i;
+	int j;
+	for (i = 0; i < kdarr->dim; i++){
+		for (j = 0; j < kdarr->size; j++)
+			printf("%d\t", kdarr->mat[i][j]);
+		printf("\n");
+	}
+}
 
 int printSPPoint (SPPoint* p)
 {
-	printf("******************** Start printf kdarr ********************\n");
+	printf("******************** Start printf SPPoint ********************\n");
 	int i = 0;
 	if( p == NULL)
 		SEND_ERROR("pointer is null");
@@ -20,74 +38,49 @@ int printSPPoint (SPPoint* p)
 	for (i = 1; i < spPointGetDimension(p) + 1; i++)
 		printf("coordinate no: %d value is: %f\n", i, spPointGetAxisCoor(p, i));
 
-	printf("******************** End printf kdarr ********************\n");
+	printf("******************** End printf SPPoint ********************\n");
 
 	return 0;
 }
 
-// int printKDArray(KDArray* arr)
-// {
-// 	printf("******************** Start printf kdarr ********************\n");
-// 	int i,j;
-// 	SPPoint* cer;
-
-// 	printf("Size is: %d\n", GetKDArraySize(arr));
-// 	printf("Dim is: %d\n", GetKDArrayDim(arr));
-	
-// 	for ( j = 0; j < arr->size; ++j){
-// 		printf("no. %d\t", j);
-// 		cer = arr->copied_arr[j];
-// 		printf("%d\n", spPointGetIndex(cer));
-// 	}
-// 	printf("Dim: %d\n", spPointGetDimension(arr->copied_arr[0]));
-	
-// 	for( i = 0; i < spPointGetDimension(arr->copied_arr[0]); i++){
-// 		for ( j = 0; j < arr->size ; ++j){
-// 			printf("%d\t", arr->mat[i][j]);
-// 		}
-// 		printf("\n");
-// 	}
-// 	printf("******************** End printf kdarr ********************\n");
-// 	return 1;
-// }
-
-int main(int argc, char const *argv[])
+int printKDArray(KDArray* arr)
 {
-	// int i, j;
-	// int* indexes;
-	// SPPoint** p_arr;
-	// int index = 100;
-	// double data[POINT_NUM][DIM] = {{1,2,0}, {123,70,1}, {2,7,2}, {9,11,3}, {3,4,4}};
+	printf("******************** Start printf kdarr ********************\n");
+	int i,j;
+	SPPoint* cer;
+
+	printf("Size is: %d\n", GetKDArraySize(arr));
+	printf("Dim is: %d\n", GetKDArrayDim(arr));
 	
-	// p_arr = (SPPoint**)malloc(sizeof(SPPoint*) * POINT_NUM);
-
-	// for (i = 0; i <  POINT_NUM; i++)
-	// 	p_arr[i] = spPointCreate(data[i], DIM, index + i);
+	for ( j = 0; j < arr->size; ++j){
+		printf("no. %d\n", j);
+		printSPPoint(arr->copied_arr[j]);
+	}
 	
+	for( i = 0; i < spPointGetDimension(arr->copied_arr[0]); i++){
+		for ( j = 0; j < arr->size ; ++j){
+			printf("%d\t", arr->mat[i][j]);
+		}
+		printf("\n");
+	}
+	printf("******************** End printf kdarr ********************\n");
+	return 1;
+}
 
-	// indexes = spPointSortByIndex(p_arr, 0, POINT_NUM); 
-	// for (i = 0; i < POINT_NUM; i++)
-	// 	printf("%d\t", indexes[i]);
+static bool KDArrayTest()
+{
 
-	// printf("\n");
-	// for ( i = 0; i < POINT_NUM; ++i){	
-	// 	spPointDestroy(p_arr[i]);
-	// }
-	// free(p_arr);
-
-	// return 0;
-
-	double data[POINT_NUM][DIM] = {{1,2}, {123,70}, {2,7}, {9,11}, {3,4}};
+	double data[POINT_NUM][DIM] = { {1,2,3,4,5}, {123,70,50,40,72}, {2,7,19,5,46}, {9,11,13,15,58}, {3,4,5,6,23}, {15,46,72,93,19} };
 	int i;
 
 	SPPoint** p_arr = (SPPoint**)malloc(POINT_NUM*sizeof(SPPoint**));
 	for ( i = 0; i < POINT_NUM; ++i){
-		p_arr[i] = spPointCreate(data[i],DIM,97+i);
+		p_arr[i] = spPointCreate(data[i], DIM, 97 + i);
 	}
 	printf("%s\n", "Start_init");
 	KDArray* kdarr = Init(p_arr,POINT_NUM);
 	printf("%s\n", "Done_init");
-	printKDArray(kdarr);
+	// printKDArray(kdarr);
 	KDArray* left;
 	KDArray* right;
 	KDArray** total;
@@ -95,19 +88,29 @@ int main(int argc, char const *argv[])
 	total = split(kdarr, 0);
 	left = total[0];
 	right = total[1];
-	// printf("\n");
-	// printKDArray(left);
-	// printf("\n");
-	// printKDArray(right);
-
+	printf("\n");
+	printKDArray(left);
+	printf("\n");
+	printKDArray(right);
+	KDArray* left2;
+	KDArray* right2;
+	KDArray** total2;
+	total2 = split(right, 0);
+	left2 = total2[0];
+	right2 = total2[1];
 
 	// Free section
-	for ( i = 0; i < 2; i++)
-		KDArrayDestroy(total[i]);
+	FREE_KDARRAY_ARRAY(i, 2, total);
+	FREE_KDARRAY_ARRAY(i, 2, total2); 
+	KDArrayDestroy(kdarr);
 
 	free(total);
 
-	return 0;
+	return true;
 }
 
-
+int main(int argc, char const *argv[])
+{
+	RUN_TEST(KDArrayTest);
+	return 0;
+}

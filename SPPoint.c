@@ -4,6 +4,9 @@
 #include <assert.h>
 #include <math.h>
 
+#define cmp(a , b) (a > b) ? 1 : (a < b) ? -1 : 0 
+#define LINE printf("~~~~~~~~~~~~~~~~~~~~ %d ~~~~~~~~~~~~~~~~~~~~\n", __LINE__);
+
 struct sp_point_t
 {
 	double* data;
@@ -128,7 +131,7 @@ SPPoint* ExpendDim(SPPoint* p, double val)
 
 
 int Mine_Cmp(const void* a, const void *b){ 
-	return (int)(*(SPPoint**)a)->data[SortIndex] - (int)(*(SPPoint**)b)-> data[SortIndex];
+	return cmp((*(SPPoint**)a)->data[SortIndex], (*(SPPoint**)b)-> data[SortIndex]);
 }
 
 
@@ -142,11 +145,11 @@ int* spPointSortByIndex(SPPoint** arr, int index, int size)
 		return NULL;
 	if((indexes = (int*)malloc(sizeof(int) * size)) == NULL)
 		return NULL;
-	qsort(arr, 5, sizeof(SPPoint*), Mine_Cmp);
-	for (i = 0; i < 5; i++)
+	qsort(arr, size, sizeof(SPPoint*), Mine_Cmp);
+	for (i = 0; i < size; i++)
 		indexes[i] = (int)spPointGetAxisCoor(arr[i],arr[i]->dim);
 	return indexes;
-} 
+}
 
 SPPoint* DecreaseDim(SPPoint* p)
 {
