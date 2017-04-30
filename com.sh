@@ -1,5 +1,5 @@
 #!/bin/bash
-date
+echo -e "`whoami` # `date`"
 make 2>log.txt
 if [ $# -eq 0 ]; then
 	cat log.txt

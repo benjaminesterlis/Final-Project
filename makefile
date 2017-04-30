@@ -17,7 +17,7 @@ C_COMP_FLAG = -std=c99 -Wall -Wextra \
 -Werror -pedantic-errors -DNDEBUG
 
 $(EXEC): $(OBJS)
-	$(CPP) $(OBJS) -L$(LIBPATH) $(LIBS) -o $@
+	$(CPP) $(OBJS) -L $(LIBPATH) $(LIBS) -o $@
 
 main.o: main.cpp #put dependencies here!
 	$(CPP) $(CPP_COMP_FLAG) -I $(INCLUDEPATH) -c $*.cpp
@@ -26,11 +26,13 @@ main.o: main.cpp #put dependencies here!
 #use g++ -MM SPImageProc.cpp to see dependencies
 #
 SPImageProc.o: SPImageProc.cpp SPImageProc.h SPConfig.h SPPoint.h SPLogger.h
-	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
+	$(CPP) $(CPP_COMP_FLAG) -I $(INCLUDEPATH) -c $*.cpp
+
+SPBPQueue.o:
+	$(CC) $(C_COMP_FLAG) -c $*.c
 
 #a rule for building a simple c source file
 #use "gcc -MM SPPoint.c" to see the dependencies
-#
 SPPoint.o: SPPoint.c SPPoint.h 
 	$(CC) $(C_COMP_FLAG) -c $*.c
 
