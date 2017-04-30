@@ -74,12 +74,6 @@ do { \
 #define	SP_LL "spLoggerLevel"
 #define	SP_LF "spLoggerFilename"
 
-typedef enum DKTreeSplitMethods_t {
-	MAX_SPRED,
-	RANDOM,
-	INCREAMENTAL
-} SplitMethod;
-
 struct sp_config_t
 {
 	char *spImagesDirectory;
@@ -599,4 +593,10 @@ int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG msg)
 {
 	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spKNN;
+}
+
+SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG msg)
+{
+	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	return config->spKDTreeSplitMethod;
 }

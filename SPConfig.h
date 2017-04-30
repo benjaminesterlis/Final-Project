@@ -9,6 +9,12 @@
  * A data-structure which is used for configuring the system.
  */
 
+typedef enum DKTreeSplitMethods_t {
+	MAX_SPRED,
+	RANDOM,
+	INCREAMENTAL
+} SplitMethod;
+
 typedef enum sp_config_msg_t {
 	SP_CONFIG_SUCCESS,
 	SP_CONFIG_MISSING_DIR,
@@ -191,5 +197,8 @@ char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG msg);
 char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG msg);
 
 int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG msg);
+
+SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG msg)
+
 #endif /* SPCONFIG_H_ */
 

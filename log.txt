@@ -1,131 +1,280 @@
-g++ -std=c++11 -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -I/usr/local/lib/opencv-3.1.0/include/ -c main.cpp
-main.cpp: In function 'int main(int, const char**)':
-main.cpp:7:2: error: 'ImageProc' was not declared in this scope
-  ImageProc proc;
-  ^
-main.cpp:7:2: note: suggested alternative:
+In file included from SPImageProc.h:9:0,
+                 from main_aux.h:1,
+                 from main.cpp:1:
+SPPoint.h:23:1: error: expected initializer before 'typedef'
+ typedef struct sp_point_t SPPoint;
+ ^
+SPPoint.h:41:1: error: 'SPPoint' does not name a type
+ SPPoint* spPointCreate(double* data, int dim, int index);
+ ^
+SPPoint.h:63:1: error: 'SPPoint' does not name a type
+ SPPoint* spPointCopy(SPPoint* source);
+ ^
+SPPoint.h:70:21: error: variable or field 'spPointDestroy' declared void
+ void spPointDestroy(SPPoint* point);
+                     ^
+SPPoint.h:70:21: error: 'SPPoint' was not declared in this scope
+SPPoint.h:70:30: error: 'point' was not declared in this scope
+ void spPointDestroy(SPPoint* point);
+                              ^
+SPPoint.h:80:25: error: 'SPPoint' was not declared in this scope
+ int spPointGetDimension(SPPoint* point);
+                         ^
+SPPoint.h:80:34: error: 'point' was not declared in this scope
+ int spPointGetDimension(SPPoint* point);
+                                  ^
+SPPoint.h:90:21: error: 'SPPoint' was not declared in this scope
+ int spPointGetIndex(SPPoint* point);
+                     ^
+SPPoint.h:90:30: error: 'point' was not declared in this scope
+ int spPointGetIndex(SPPoint* point);
+                              ^
+SPPoint.h:102:27: error: 'SPPoint' was not declared in this scope
+ double spPointGetAxisCoor(SPPoint* point, int axis);
+                           ^
+SPPoint.h:102:36: error: 'point' was not declared in this scope
+ double spPointGetAxisCoor(SPPoint* point, int axis);
+                                    ^
+SPPoint.h:102:43: error: expected primary-expression before 'int'
+ double spPointGetAxisCoor(SPPoint* point, int axis);
+                                           ^
+SPPoint.h:102:51: error: expression list treated as compound expression in initializer [-fpermissive]
+ double spPointGetAxisCoor(SPPoint* point, int axis);
+                                                   ^
+SPPoint.h:115:33: error: 'SPPoint' was not declared in this scope
+ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
+                                 ^
+SPPoint.h:115:42: error: 'p' was not declared in this scope
+ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
+                                          ^
+SPPoint.h:115:45: error: 'SPPoint' was not declared in this scope
+ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
+                                             ^
+SPPoint.h:115:54: error: 'q' was not declared in this scope
+ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
+                                                      ^
+SPPoint.h:115:55: error: expression list treated as compound expression in initializer [-fpermissive]
+ double spPointL2SquaredDistance(SPPoint* p, SPPoint* q);
+                                                       ^
+SPPoint.h:120:1: error: 'SPPoint' does not name a type
+ SPPoint* ExpendDim(SPPoint* p, double val); 
+ ^
+SPPoint.h:125:1: error: 'SPPoint' does not name a type
+ SPPoint* spPointDecreaseDim(SPPoint* p);
+ ^
+SPPoint.h:143:26: error: 'SPPoint' was not declared in this scope
+  int* spPointSortByIndex(SPPoint** arr, int index, int size);
+                          ^
+SPPoint.h:143:36: error: 'arr' was not declared in this scope
+  int* spPointSortByIndex(SPPoint** arr, int index, int size);
+                                    ^
+SPPoint.h:143:41: error: expected primary-expression before 'int'
+  int* spPointSortByIndex(SPPoint** arr, int index, int size);
+                                         ^
+SPPoint.h:143:52: error: expected primary-expression before 'int'
+  int* spPointSortByIndex(SPPoint** arr, int index, int size);
+                                                    ^
+SPPoint.h:143:60: error: expression list treated as compound expression in initializer [-fpermissive]
+  int* spPointSortByIndex(SPPoint** arr, int index, int size);
+                                                            ^
 In file included from main_aux.h:1:0,
                  from main.cpp:1:
-SPImageProc.h:17:7: note:   'sp::ImageProc'
- class ImageProc {
-       ^
-main.cpp:7:12: error: expected ';' before 'proc'
-  ImageProc proc;
-            ^
-In file included from /usr/include/unistd.h:226:0,
-                 from main_aux.h:29,
+SPImageProc.h:53:2: error: 'SPPoint' does not name a type
+  SPPoint** getImageFeatures(const char* imagePath,int index,int* numOfFeats);
+  ^
+In file included from KDTree.h:1:0,
+                 from main_aux.h:34,
                  from main.cpp:1:
-main.cpp:12:22: error: invalid conversion from 'long int' to 'SP_CONFIG_MSG {aka sp_config_msg_t}' [-fpermissive]
-  SP_CONFIG_MSG msg = NULL;
-                      ^
-main.cpp:26:2: error: 'SPPOint' was not declared in this scope
-  SPPOint** QeuryImage = NULL;
+KDArray.h:5:2: error: 'SPPoint' does not name a type
+  SPPoint** copied_arr;
   ^
-main.cpp:26:12: error: 'QeuryImage' was not declared in this scope
-  SPPOint** QeuryImage = NULL;
-            ^
-In file included from main.cpp:1:0:
-main_aux.h:41:14: error: '__VA__ARGS__' was not declared in this scope
-  printf(fmt, __VA__ARGS__); \
-              ^
-main.cpp:33:3: note: in expansion of macro 'SEND_ERROR'
-   SEND_ERROR("%s", INVALID_COMMAND);
-   ^
-main_aux.h:41:14: error: '__VA__ARGS__' was not declared in this scope
-  printf(fmt, __VA__ARGS__); \
-              ^
-main_aux.h:49:3: note: in expansion of macro 'SEND_ERROR'
-   SEND_ERROR("%s" , __VA__ARGS__); \
-   ^
-main.cpp:37:3: note: in expansion of macro 'CHECK_RET'
-   CHECK_RET(strcmp(argv[1], C), SRTCMP_ERROR);
-   ^
-main.cpp:38:35: error: invalid conversion from 'const char*' to 'char*' [-fpermissive]
-   CHECK_RET(check_file_name(argv[2]), WRONG_FORMAT_ERROR); 
-                                   ^
-main_aux.h:48:8: note: in definition of macro 'CHECK_RET'
-  if (!(cond)) \
-        ^
-main_aux.h:41:14: error: '__VA__ARGS__' was not declared in this scope
-  printf(fmt, __VA__ARGS__); \
-              ^
-main_aux.h:49:3: note: in expansion of macro 'SEND_ERROR'
-   SEND_ERROR("%s" , __VA__ARGS__); \
-   ^
-main.cpp:38:3: note: in expansion of macro 'CHECK_RET'
-   CHECK_RET(check_file_name(argv[2]), WRONG_FORMAT_ERROR); 
-   ^
-main.cpp:44:2: error: 'conf' was not declared in this scope
-  conf = spConfigCreate(conf_file, msg);
-  ^
-main.cpp:44:38: error: cannot convert 'FILE* {aka _IO_FILE*}' to 'const char*' for argument '1' to 'sp_config_t* spConfigCreate(const char*, SP_CONFIG_MSG*)'
-  conf = spConfigCreate(conf_file, msg);
+KDArray.h:22:15: error: 'SPPoint' was not declared in this scope
+ KDArray* Init(SPPoint** arr, int size);
+               ^
+KDArray.h:22:25: error: 'arr' was not declared in this scope
+ KDArray* Init(SPPoint** arr, int size);
+                         ^
+KDArray.h:22:30: error: expected primary-expression before 'int'
+ KDArray* Init(SPPoint** arr, int size);
+                              ^
+KDArray.h:22:38: error: expression list treated as compound expression in initializer [-fpermissive]
+ KDArray* Init(SPPoint** arr, int size);
                                       ^
-main.cpp:47:10: error: expected '(' before 'msg'
-   switch msg
-          ^
-main.cpp:149:1: error: expected '}' at end of input
- }
+KDArray.h:49:1: error: 'SPPoint' does not name a type
+ SPPoint** GetKDArrayCopied_Arr(KDArray* arr);
  ^
-main.cpp:10:8: error: unused variable 'new_image_file' [-Werror=unused-variable]
-  FILE* new_image_file = NULL;
-        ^
-main.cpp:13:13: error: unused variable 'features' [-Werror=unused-variable]
+In file included from main_aux.h:34:0,
+                 from main.cpp:1:
+KDTree.h:8:2: error: 'SPPoint' does not name a type
+  SPPoint* data;
+  ^
+KDTree.h:14:2: error: redeclaration of 'RANDOM'
+  RANDOM,
+  ^
+In file included from SPImageProc.h:8:0,
+                 from main_aux.h:1,
+                 from main.cpp:1:
+SPConfig.h:14:2: note: previous declaration 'DKTreeSplitMethods_t RANDOM'
+  RANDOM,
+  ^
+In file included from main_aux.h:34:0,
+                 from main.cpp:1:
+KDTree.h:32:1: error: 'SPPoint' does not name a type
+ SPPoint* getKDTreeData(KDTreeNode* node);
+ ^
+In file included from main.cpp:1:0:
+main_aux.h:93:16: error: 'SPPoint' was not declared in this scope
+ int magic_func(SPPoint* p, char* buf);
+                ^
+main_aux.h:93:25: error: 'p' was not declared in this scope
+ int magic_func(SPPoint* p, char* buf);
+                         ^
+main_aux.h:93:28: error: expected primary-expression before 'char'
+ int magic_func(SPPoint* p, char* buf);
+                            ^
+main_aux.h:93:37: error: expression list treated as compound expression in initializer [-fpermissive]
+ int magic_func(SPPoint* p, char* buf);
+                                     ^
+main_aux.h:95:1: error: 'SPPoint' does not name a type
+ SPPoint** read_features(const SPConfig conf, int index, int* num);
+ ^
+main_aux.h:97:19: error: 'SPPoint' was not declared in this scope
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                   ^
+main_aux.h:97:28: error: 'feature' was not declared in this scope
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                            ^
+main_aux.h:97:47: error: expected primary-expression before '*' token
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                                               ^
+main_aux.h:97:49: error: 'curr' was not declared in this scope
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                                                 ^
+main_aux.h:97:64: error: expected primary-expression before '*' token
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                                                                ^
+main_aux.h:97:66: error: 'bpq' was not declared in this scope
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                                                                  ^
+main_aux.h:97:71: error: expected primary-expression before 'int'
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                                                                       ^
+main_aux.h:97:79: error: expression list treated as compound expression in initializer [-fpermissive]
+ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+                                                                               ^
+main.cpp: In function 'int main(int, const char**)':
+main.cpp:16:2: error: 'SPPoint' was not declared in this scope
+  SPPoint*** features = NULL;
+  ^
+main.cpp:16:13: error: 'features' was not declared in this scope
   SPPoint*** features = NULL;
              ^
-main.cpp:14:6: error: unused variable 'points_done' [-Werror=unused-variable]
-  int points_done = 0;
-      ^
-main.cpp:15:17: error: unused variable 'confing' [-Werror=unused-variable]
-  const SPConfig confing = NULL;
-                 ^
-main.cpp:16:12: error: unused variable 'total_features' [-Werror=unused-variable]
+main.cpp:19:12: error: 'total_features' was not declared in this scope
   SPPoint** total_features = NULL;
             ^
-main.cpp:17:6: error: unused variable 'total_n_feature' [-Werror=unused-variable]
-  int total_n_feature = 0;
-      ^
-main.cpp:18:7: error: unused variable 'num_feat_arr' [-Werror=unused-variable]
-  int* num_feat_arr = NULL;
-       ^
-main.cpp:19:14: error: unused variable 'root' [-Werror=unused-variable]
-  KDTreeNode* root = NULL;
-              ^
-main.cpp:20:6: error: unused variable 'num_of_images' [-Werror=unused-variable]
-  int num_of_images;
-      ^
-main.cpp:21:6: error: unused variable 'pos' [-Werror=unused-variable]
-  int pos = 0;
-      ^
-main.cpp:22:6: error: unused variable 'flag' [-Werror=unused-variable]
-  int flag = 0;
-      ^
-main.cpp:23:6: error: unused variable 'new_n_feat' [-Werror=unused-variable]
-  int new_n_feat;
-      ^
-main.cpp:24:8: error: unused variable 'new_image_path' [-Werror=unused-variable]
-  char* new_image_path;
+main.cpp:29:12: error: 'QeuryImage' was not declared in this scope
+  SPPoint** QeuryImage = NULL;
+            ^
+In file included from main.cpp:1:0:
+main.cpp:78:34: error: expected primary-expression before ')' token
+  CHECK_RET(features = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
+                                  ^
+main_aux.h:49:8: note: in definition of macro 'CHECK_RET'
+  if (!(cond)) \
         ^
-main.cpp:25:13: error: unused variable 'bqp' [-Werror=unused-variable]
+main.cpp:78:35: error: expected ')' before 'malloc'
+  CHECK_RET(features = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
+                                   ^
+main_aux.h:49:8: note: in definition of macro 'CHECK_RET'
+  if (!(cond)) \
+        ^
+main_aux.h:45:3: error: expected ')' before 'while'
+ } while(0)
+   ^
+main_aux.h:50:3: note: in expansion of macro 'SEND_ERROR'
+   SEND_ERROR("%s" , to_format); \
+   ^
+main.cpp:78:2: note: in expansion of macro 'CHECK_RET'
+  CHECK_RET(features = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
+  ^
+main_aux.h:50:31: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+   SEND_ERROR("%s" , to_format); \
+                               ^
+main.cpp:78:2: note: in expansion of macro 'CHECK_RET'
+  CHECK_RET(features = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
+  ^
+main.cpp:81:63: error: 'read_features' was not declared in this scope
+    CHECK_RET(features[i] = read_features(conf, i, num_feat_arr), BUILD_ERROR);
+                                                               ^
+main_aux.h:49:8: note: in definition of macro 'CHECK_RET'
+  if (!(cond)) \
+        ^
+main.cpp:85:39: error: expected primary-expression before ')' token
+  CHECK_RET(total_features = (SPPoint**)malloc(sizeof(SPPoint*) * total_n_feature), MALLOC_ERROR);
+                                       ^
+main_aux.h:49:8: note: in definition of macro 'CHECK_RET'
+  if (!(cond)) \
+        ^
+main.cpp:85:40: error: expected ')' before 'malloc'
+  CHECK_RET(total_features = (SPPoint**)malloc(sizeof(SPPoint*) * total_n_feature), MALLOC_ERROR);
+                                        ^
+main_aux.h:49:8: note: in definition of macro 'CHECK_RET'
+  if (!(cond)) \
+        ^
+main_aux.h:45:3: error: expected ')' before 'while'
+ } while(0)
+   ^
+main_aux.h:50:3: note: in expansion of macro 'SEND_ERROR'
+   SEND_ERROR("%s" , to_format); \
+   ^
+main.cpp:85:2: note: in expansion of macro 'CHECK_RET'
+  CHECK_RET(total_features = (SPPoint**)malloc(sizeof(SPPoint*) * total_n_feature), MALLOC_ERROR);
+  ^
+main_aux.h:50:31: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+   SEND_ERROR("%s" , to_format); \
+                               ^
+main.cpp:85:2: note: in expansion of macro 'CHECK_RET'
+  CHECK_RET(total_features = (SPPoint**)malloc(sizeof(SPPoint*) * total_n_feature), MALLOC_ERROR);
+  ^
+main.cpp:93:77: error: 'spConfigGetSplitMethod' was not declared in this scope
+  CHECK_NOT(KDTreeInit(total_features, root, spConfigGetSplitMethod(conf, msg), 0), KDTREE_INIT_ERROR);
+                                                                             ^
+main_aux.h:49:8: note: in definition of macro 'CHECK_RET'
+  if (!(cond)) \
+        ^
+main.cpp:93:2: note: in expansion of macro 'CHECK_NOT'
+  CHECK_NOT(KDTreeInit(total_features, root, spConfigGetSplitMethod(conf, msg), 0), KDTREE_INIT_ERROR);
+  ^
+main.cpp:103:50: error: cannot convert 'SP_CONFIG_MSG {aka sp_config_msg_t}' to 'SP_CONFIG_MSG* {aka sp_config_msg_t*}' for argument '2' to 'int spConfigGetNumOfFeatures(SPConfig, SP_CONFIG_MSG*)'
+   new_n_feat = spConfigGetNumOfFeatures(conf, msg)
+                                                  ^
+In file included from main.cpp:1:0:
+main_aux.h:56:1: error: expected ';' before 'do'
+ do { \
+ ^
+main.cpp:104:3: note: in expansion of macro 'MSG_NOT_SUCCESS'
+   MSG_NOT_SUCCESS (msg, "Error, in spConfigGetNumOfFeatures");
+   ^
+main.cpp:154:1: error: expected '}' at end of input
+ }
+ ^
+main.cpp:13:8: error: unused variable 'new_image_file' [-Werror=unused-variable]
+  FILE* new_image_file = NULL;
+        ^
+main.cpp:17:6: error: unused variable 'points_done' [-Werror=unused-variable]
+  int points_done = 0;
+      ^
+main.cpp:28:13: error: unused variable 'bqp' [-Werror=unused-variable]
   SPBPQueue* bqp = NULL;
              ^
-main.cpp:27:7: error: unused variable 'images_indexes' [-Werror=unused-variable]
-  int* images_indexes = NULL;
-       ^
-main.cpp:28:6: error: unused variable 'K_close' [-Werror=unused-variable]
-  int K_close;
-      ^
-main.cpp:29:7: error: unused variable 'is_minimal' [-Werror=unused-variable]
-  bool is_minimal;
-       ^
-main.cpp:149:1: error: expected '}' at end of input
+main.cpp:154:1: error: expected '}' at end of input
  }
  ^
 In file included from main.cpp:1:0:
-main_aux.h:43:7: error: label 'CLEANUP' used but not defined
+main_aux.h:44:7: error: label 'CLEANUP' used but not defined
   goto CLEANUP; \
        ^
-main.cpp:33:3: note: in expansion of macro 'SEND_ERROR'
+main.cpp:36:3: note: in expansion of macro 'SEND_ERROR'
    SEND_ERROR("%s", INVALID_COMMAND);
    ^
 cc1plus: all warnings being treated as errors
