@@ -96,9 +96,7 @@ void copy(double *dest, double *src, int range)
 {
 	int i;
 	for (i = 0; i < range; ++i)
-	{
 		dest[i] = src[i];
-	}
 }
 
 SPPoint* ExpendDim(SPPoint* p, double val)
@@ -156,7 +154,7 @@ SPPoint* DecreaseDim(SPPoint* p)
 	if(p == NULL)
 		return NULL;
 	p->dim--;
-	if((p->data = realloc(p->data, p->dim)) == NULL)
+	if((p->data = (double*)realloc(p->data, sizeof(double) * (p->dim))) == NULL)
 		return NULL;
 	return p;
 }

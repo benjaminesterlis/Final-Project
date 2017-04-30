@@ -14,7 +14,14 @@
 do { \
 	for ( i = 0; i < size; i++) \
 		KDArrayDestroy(arr[i]); \
-} while(0) \
+	free(arr); \
+} while(0) 
+#define FREE_POINTS_ARRAY(i, size, arr) \
+do { \
+	for ( i= 0; i< size; i++) \
+		spPointDestroy(arr[i]); \
+	free(arr); \
+} while(0)
 
 void printMat(KDArray* kdarr)
 {
@@ -73,7 +80,7 @@ static bool KDArrayTest()
 	double data[POINT_NUM][DIM] = { {1,2,3,4,5}, {123,70,50,40,72}, {2,7,19,5,46}, {9,11,13,15,58}, {3,4,5,6,23}, {15,46,72,93,19} };
 	int i;
 
-	SPPoint** p_arr = (SPPoint**)malloc(POINT_NUM*sizeof(SPPoint**));
+	SPPoint** p_arr = (SPPoint**)malloc(sizeof(SPPoint**) * POINT_NUM);
 	for ( i = 0; i < POINT_NUM; ++i){
 		p_arr[i] = spPointCreate(data[i], DIM, 97 + i);
 	}
@@ -89,9 +96,9 @@ static bool KDArrayTest()
 	left = total[0];
 	right = total[1];
 	printf("\n");
-	printKDArray(left);
+	// printKDArray(left);
 	printf("\n");
-	printKDArray(right);
+	// printKDArray(right);
 	KDArray* left2;
 	KDArray* right2;
 	KDArray** total2;
@@ -101,10 +108,9 @@ static bool KDArrayTest()
 
 	// Free section
 	FREE_KDARRAY_ARRAY(i, 2, total);
-	FREE_KDARRAY_ARRAY(i, 2, total2); 
+	FREE_KDARRAY_ARRAY(i, 2, total2);
 	KDArrayDestroy(kdarr);
-
-	free(total);
+	FREE_POINTS_ARRAY(i, POINT_NUM, p_arr); 
 
 	return true;
 }
