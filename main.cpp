@@ -1,10 +1,11 @@
 #include "main_aux.h"
 
+using namespace sp;
 /********************* MAIN *********************/
 
 int main(int argc, char const *argv[])
 {
-	ImageProc proc = NULL;
+	ImageProc proc;
 	const char* file_name = DEFUALT;
 	FILE* conf_file = NULL;
 	FILE* new_image_file = NULL;
@@ -23,7 +24,7 @@ int main(int argc, char const *argv[])
 	int new_n_feat;
 	char* new_image_path;
 	SPBPQueue* bqp = NULL;
-	SPPOint** QeuryImage = NULL;
+	SPPoint** QeuryImage = NULL;
 	int* images_indexes = NULL;
 	int K_close;
 	bool is_minimal;
