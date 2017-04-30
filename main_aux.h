@@ -24,14 +24,12 @@
 
 
 extern "C" {
-	#include <stdio.h>
-	#include <stdlib.h>
 	#include <unistd.h>
-	#include <string.h>
 	#include <errno.h>
-	#include <stdarg.h>
+	#include <SPLogger.h>
 	#include "SPConfig.h"
 	#include "KDTree.h"
+	#include "KDArray.h"
 	#include "SPPoint.h"
 	#include "SPBPriorityQueue.h"
 }

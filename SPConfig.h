@@ -190,15 +190,15 @@ void spConfigDestroy(SPConfig config);
 
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 
-char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG msg);
+char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg);
 
-char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG msg);
+char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg);
 
-char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG msg);
+char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG* msg);
 
-int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG msg);
+int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg);
 
-SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG msg)
+SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg);
 
 #endif /* SPCONFIG_H_ */
 

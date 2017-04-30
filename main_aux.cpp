@@ -53,19 +53,19 @@ int extraction_mode(const SPConfig conf, sp::ImageProc proc)
 	FILE* image_file;
 	SPPoint** features;
 
-	num_of_images = spConfigGetNumOfImages(conf, msg);
+	num_of_images = spConfigGetNumOfImages(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
-	num_of_features = spConfigGetNumOfFeatures(conf, msg);
+	num_of_features = spConfigGetNumOfFeatures(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
-	prefix = spGetImagePreffix(conf, msg);
+	prefix = spGetImagePreffix(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
-	suffix = spGetImageSuffix(conf, msg);
+	suffix = spGetImageSuffix(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
-	dir = spGetImageDirectory(conf, msg);
+	dir = spGetImageDirectory(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
 	// for each image will create .feat file
@@ -127,10 +127,10 @@ SPPoint** read_features(const SPConfig conf, int index, int* num)
 	SPPoint** features;
 	SP_CONFIG_MSG msg;
 
-	prefix = spGetImagePreffix(conf, msg);
+	prefix = spGetImagePreffix(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
-	dir = spGetImageDirectory(conf, msg);
+	dir = spGetImageDirectory(conf, &msg);
 	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
 
 	// create the path to the file to open

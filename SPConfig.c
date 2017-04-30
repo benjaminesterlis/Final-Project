@@ -24,7 +24,7 @@
 
 #define FREE(out_msg) do { \
 		spConfigDestroy(conf); \
-		close(fp); \
+		fclose(fp); \
 		*msg = out_msg; \
 		return NULL; \
 	} while(0)
@@ -52,11 +52,13 @@ do { \
 	return ret; \
 } while(0)
 
-#define CHECK(cond,func) \ 
+#define CHECK(cond,func) \
 do { \
 	if(!cond) \
 		func; \
 } while(0)
+
+static SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, const char* filename, int line);
 
 #define O_RONLY "r"
 #define	SP_DIR "spImagesDirectory"
@@ -110,8 +112,6 @@ bool sp_free[5] = {false, false, false, false, false};
  */
 char* must_param_name[4] = {SP_DIR, SP_PRE, SP_SUF, SP_NOI};
 
-static SPConfig conf;
-
 /** 
  * - cell 0  for spImagesDirectory
  * - cell 1  for spImagesPrefix
@@ -142,6 +142,7 @@ SP_CONFIG_MSG conf_error[5]={SP_CONFIG_MISSING_DIR, SP_CONFIG_MISSING_PREFIX,
 
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 {
+	SPConfig conf;
 	assert(msg != NULL);
 	int line = 0;
 	FILE* fp;
@@ -149,7 +150,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	char var[200]; //beacuse variables names are no longer then 200 ;)
 	char* val = NULL;
 	char read;
-	SP_CONFIG_MSG* new_msg;
+	SP_CONFIG_MSG* new_msg=NULL;
 	
 	if ( filename == NULL)
 	{
@@ -157,14 +158,14 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		return NULL;
 	}
 
-	if ((fp = fopen(filename, O_RONLY))  < 0 )
+	if (!(fp = fopen(filename, O_RONLY)))
 	{
 		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
 		return NULL;
 	}
 	
 	if((conf = (SPConfig)malloc(sizeof(SPConfig))) == NULL){
-		close(fp);
+		fclose(fp);
 		*msg = SP_CONFIG_ALLOC_FAIL;
 		return NULL;
 	}
@@ -204,7 +205,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		// read till end of variable name 
 		while(read != 32/*' '*/ || read != 61/*'='*/ )
 		{
-			if (97/*'A'*/ < read < 122/*'Z'*/ || 65/*'a'*/ < read < 90/*'z'*/)//only alphabet's chars
+			if ((97/*'A'*/ < read && read < 122/*'Z'*/ )|| (65/*'a'*/ < read && read < 90/*'z'*/))//only alphabet's chars
 			{
 				var[i] = read;
 				i++;
@@ -247,11 +248,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		SKIP_WHITESPACES;
 		if(read == EOL || read == EOF)
 		{
-			*new_msg = add_field_to_struct(var, val, i + 1, filename, line);
+			*new_msg = add_field_to_struct(conf, var, val, i + 1, filename, line);
 			if (*new_msg != SP_CONFIG_SUCCESS){
 				free(val);
 				spConfigDestroy(conf);
-				close(fp);
+				fclose(fp);
 				msg = new_msg;
 				return NULL;
 			}
@@ -271,7 +272,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 
 }
 
-bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg)
+bool spConfigIsExtractionMode(const SPConfig conf, SP_CONFIG_MSG* msg)
 {
 	assert(msg != NULL);
 	if (conf == NULL)
@@ -284,7 +285,7 @@ bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg)
 
 }
 
-bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg)
+bool spConfigMinimalGui(const SPConfig conf, SP_CONFIG_MSG* msg)
 {
 	assert(msg != NULL);
 	if (conf == NULL)
@@ -296,7 +297,7 @@ bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg)
 	return conf->spMinimalGUI;
 }
 
-int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg)
+int spConfigGetNumOfImages(const SPConfig conf, SP_CONFIG_MSG* msg)
 {
 	assert(msg != NULL);
 	if (conf == NULL)
@@ -308,7 +309,7 @@ int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg)
 	return conf->spNumOfImages;
 }
 
-int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg)
+int spConfigGetNumOfFeatures(const SPConfig conf, SP_CONFIG_MSG* msg)
 {
 	assert(msg != NULL);
 	if (conf == NULL)
@@ -320,7 +321,7 @@ int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg)
 	return conf->spNumOfFeatures;
 }
 
-int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg)
+int spConfigGetPCADim(const SPConfig conf, SP_CONFIG_MSG* msg)
 {
 	assert(msg != NULL);
 	if (conf == NULL)
@@ -332,10 +333,9 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg)
 	return conf->spPCADimension;
 }
 
-SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
+SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig conf,
 		int index)
 {
-	int i;
 	if (conf == NULL || imagePath == NULL )
 		return SP_CONFIG_INVALID_ARGUMENT;
 
@@ -350,9 +350,8 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 	return SP_CONFIG_SUCCESS;
 }
 
-SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config)
+SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig conf)
 {
-	int i;
 	if (conf == NULL || pcaPath == NULL )
 		return SP_CONFIG_INVALID_ARGUMENT;
 	/* assmued sprintf always works */
@@ -390,7 +389,7 @@ void spConfigDestroy(SPConfig config)
  * - SP_CONDIF_SUCCEES - otherwise
  */
 static
-SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filename, int line)
+SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, const char* filename, int line)
 {	
 	char *temp;
 	if(val == NULL || var == NULL)
@@ -570,33 +569,33 @@ SP_CONFIG_MSG add_field_to_struct(char* var, char* val, int n, const char* filen
 	return SP_CONFIG_WRONG_FIELD_NAME;
 }
 
-char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG msg)
+char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
 	return config->spImagesPrefix;
 }
 
 
-char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG msg)
+char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
 	return config->spImagesSuffix;
 }
 
-char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG msg)
+char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
 	return config->spImagesDirectory;
 }
 
-int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG msg)
+int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spKNN;
 }
 
-SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG msg)
+SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spKDTreeSplitMethod;
 }
