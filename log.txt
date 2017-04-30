@@ -60,7 +60,7 @@ SPPoint.h:120:1: error: 'SPPoint' does not name a type
  SPPoint* ExpendDim(SPPoint* p, double val); 
  ^
 SPPoint.h:125:1: error: 'SPPoint' does not name a type
- SPPoint* spPointDecreaseDim(SPPoint* p);
+ SPPoint* DecreaseDim(SPPoint* p);
  ^
 SPPoint.h:144:26: error: 'SPPoint' was not declared in this scope
   int* spPointSortByIndex(SPPoint** arr, int index, int size);
