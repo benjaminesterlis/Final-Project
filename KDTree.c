@@ -59,16 +59,18 @@ int KDTreeInit (KDArray* arr, KDTreeNode** root,
 	if((size = GetKDArraySize(arr)) == 0)
 		return -1;
 	
-	if((med_val_pointer = (double*)malloc(sizeof(double))) == NULL)
-		return 1;
 
-	if ((*root = (KDTreeNode*)malloc(sizeof(KDTreeNode))) == NULL){
-		free(med_val_pointer);
+	if ((*root = (KDTreeNode*)malloc(sizeof(KDTreeNode))) == NULL)
 		return -1;
-	}
+	
 	
 	if(size == 1)
 		ROOT_SET(*root, -1, NULL, NULL, NULL, spPointCopy(GetKDArrayCopied_Arr(arr)[0]), arr);
+
+	if((med_val_pointer = (double*)malloc(sizeof(double))) == NULL){
+		free(root);
+		return 1;
+	}
 
 	switch (split_method)
 	{
@@ -94,6 +96,7 @@ int KDTreeInit (KDArray* arr, KDTreeNode** root,
  	KD_S(check, total[0], &(*root)->left, split_method, upper_level_dim + 1, *root);	
  	KD_S(check, total[1], &(*root)->right, split_method, upper_level_dim + 1, *root);
  	// printf("%lf\n", *med_val_pointer);	
+ 	free(total);
 	ROOT_SET(*root, split_dim, med_val_pointer, (*root)->left, (*root)->right, NULL, arr);
 
 }
