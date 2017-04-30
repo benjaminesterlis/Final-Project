@@ -29,6 +29,7 @@ extern "C" {
 	#include <unistd.h>
 	#include <string.h>
 	#include <errno.h>
+	#include <stdarg.h>
 	#include "SPConfig.h"
 	#include "KDTree.h"
 	#include "SPPoint.h"
@@ -36,20 +37,20 @@ extern "C" {
 }
 
 
-#define SEND_ERROR( fmt, ...) \
+#define SEND_ERROR( fmt, to_format ) \
 do { \
-	printf(fmt, __VA__ARGS__); \
+	printf(fmt, (to_format)); \
 	ret = -1; /* the return value of the main fucntion :)*/ \
 	goto CLEANUP; \
 } while(0)
 
-#define CHECK_RET(cond, ...) \
+#define CHECK_RET(cond, to_format) \
 do { \
 	if (!(cond)) \
-		SEND_ERROR("%s" , __VA__ARGS__); \
+		SEND_ERROR("%s" , to_format); \
 } while(0)
 
-#define CHECK_NOT(cond, ...) CHECK_RET(!(cond), __VA__ARGS__)
+#define CHECK_NOT(cond, to_format) CHECK_RET(!(cond), to_format)
 
 #define MSG_NOT_SUCCESS(msg, error) \
 do { \
@@ -85,7 +86,7 @@ int get_least_ms_dword(long qword);
 
 long extend(int most_seg_dword, int least_seg_dword);
 
-int check_file_name(char* file_name);
+int check_file_name(const char* file_name);
 
 int extraction_mode(const SPConfig conf, sp::ImageProc proc);
 

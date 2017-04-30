@@ -1,19 +1,21 @@
 #include "main_aux.h"
 
 using namespace sp;
+
 /********************* MAIN *********************/
 
 int main(int argc, char const *argv[])
 {
-	ImageProc proc;
+	int i, j;
+	ImageProc* proc;
 	const char* file_name = DEFUALT;
 	FILE* conf_file = NULL;
 	FILE* new_image_file = NULL;
 	int ret = 0;
-	SP_CONFIG_MSG msg = NULL;
+	SP_CONFIG_MSG msg;
 	SPPoint*** features = NULL;
 	int points_done = 0;
-	const SPConfig confing = NULL;
+	SPConfig conf = NULL;
 	SPPoint** total_features = NULL;
 	int total_n_feature = 0;
 	int* num_feat_arr = NULL;
@@ -42,10 +44,10 @@ int main(int argc, char const *argv[])
 
 	/**********************INIT from  Config **********************/
 
-	conf = spConfigCreate(conf_file, msg);
+	conf = spConfigCreate(file_name, &msg);
 	if (conf == NULL)
 	{
-		switch msg
+		switch (msg)
 		{
 			case SP_CONFIG_CANNOT_OPEN_FILE:
 				if (argc == 3) 
@@ -53,28 +55,30 @@ int main(int argc, char const *argv[])
 				else 
 					SEND_ERROR(DEFUALT_CONFIG, file_name); 
 				break;
+			default:
+				break;
 		}
 	}
 	fclose(conf_file);
 		
-	is_minimal = spConfigMinimalGui(conf, msg)
+	is_minimal = spConfigMinimalGui(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-	K_close = spConfigNumOfSimilarImages(conf, msg)
+	K_close = spConfigNumOfSimilarImages(conf, msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-	num_of_images = spConfigGetNumOfImages(conf, msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	num_of_images = spConfigGetNumOfImages(conf, &msg);
+	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
 
-	proc = ImageProc(conf);
+	*proc = ImageProc(conf);
 
 	// check if need to extact data to file
-	if (spConfigIsExtractionMode(conf, msg))
-	 	CHECK_RET(extraction_mode(conf), EXTRACT_ERROR);
+	if (spConfigIsExtractionMode(conf, &msg))
+	 	CHECK_RET(extraction_mode(conf, *proc), EXTRACT_ERROR);
 
 	// craete SPPoints matrix each line for each image
-	CHECK_RET(faetures = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
+	CHECK_RET(features = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
 
 	for ( i = 0; i < num_of_images; i++){
-	 	CHECK_RET(features[i] = read_features(conf, i, &num_feat_arr), BUILD_ERROR);
+	 	CHECK_RET(features[i] = read_features(conf, i, num_feat_arr), BUILD_ERROR);
 	 	total_n_feature += num_feat_arr[i];
 	}
 
@@ -86,7 +90,7 @@ int main(int argc, char const *argv[])
 			total_features[pos] = features[i][j];
 	flag = 1;
 
-	CHECK_NOT(KDTreeInit(total_features, root, spConfigGetSplitMethod(conf), 0), KDTREE_INIT_ERROR);
+	CHECK_NOT(KDTreeInit(total_features, root, spConfigGetSplitMethod(conf, msg), 0), KDTREE_INIT_ERROR);
 
 	CHECK_RET(images_indexes = (int*)malloc(sizeof(int) * num_of_images), MALLOC_ERROR);
 

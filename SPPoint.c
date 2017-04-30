@@ -16,8 +16,6 @@ struct sp_point_t
 
 int SortIndex; // Global Var to sort the SPPoints array by this coordinate
 
-void copy(double *dest, double *src, int range);
-
 SPPoint* spPointCreate(double* data, int dim, int index) 
 {
 	if (dim <= 0 || index < 0 || data == NULL)

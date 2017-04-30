@@ -18,7 +18,7 @@ long extend(int most_seg_dword, int least_seg_dword)
 
 // the last letter must be .config which is 7
 // check if the type is .config type	
-int check_file_name(char* file_name)
+int check_file_name(const char* file_name)
 {
 	int size = strlen(file_name);
 	if (strcmp(CONFIG, file_name + size - CONF_SIZE) == 0)
