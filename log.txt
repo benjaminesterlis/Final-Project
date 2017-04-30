@@ -62,19 +62,19 @@ SPPoint.h:120:1: error: 'SPPoint' does not name a type
 SPPoint.h:125:1: error: 'SPPoint' does not name a type
  SPPoint* spPointDecreaseDim(SPPoint* p);
  ^
-SPPoint.h:143:26: error: 'SPPoint' was not declared in this scope
+SPPoint.h:144:26: error: 'SPPoint' was not declared in this scope
   int* spPointSortByIndex(SPPoint** arr, int index, int size);
                           ^
-SPPoint.h:143:36: error: 'arr' was not declared in this scope
+SPPoint.h:144:36: error: 'arr' was not declared in this scope
   int* spPointSortByIndex(SPPoint** arr, int index, int size);
                                     ^
-SPPoint.h:143:41: error: expected primary-expression before 'int'
+SPPoint.h:144:41: error: expected primary-expression before 'int'
   int* spPointSortByIndex(SPPoint** arr, int index, int size);
                                          ^
-SPPoint.h:143:52: error: expected primary-expression before 'int'
+SPPoint.h:144:52: error: expected primary-expression before 'int'
   int* spPointSortByIndex(SPPoint** arr, int index, int size);
                                                     ^
-SPPoint.h:143:60: error: expression list treated as compound expression in initializer [-fpermissive]
+SPPoint.h:144:60: error: expression list treated as compound expression in initializer [-fpermissive]
   int* spPointSortByIndex(SPPoint** arr, int index, int size);
                                                             ^
 In file included from main_aux.h:1:0,
