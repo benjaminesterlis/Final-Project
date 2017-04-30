@@ -122,7 +122,7 @@ SPPoint* ExpendDim(SPPoint* p, double val);
 /*
  * Remove the last Dim from the point.
  */
-SPPoint* spPointDecreaseDim(SPPoint* p);
+SPPoint* DecreaseDim(SPPoint* p);
 
 /*
  * Sort function for spSortByIndex.
