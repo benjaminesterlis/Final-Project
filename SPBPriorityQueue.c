@@ -327,6 +327,7 @@ bool spBPQueueIsFull(SPBPQueue* source)
 void printq(SPBPQueue* source,int axis)
 {
 	int i;
+	printf("tomerrrrrrrrrrrrrrr\n");
 	for ( i = source->size -1; i >= 0; i--)
 	{
 		switch (axis)
