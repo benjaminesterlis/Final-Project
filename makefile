@@ -24,7 +24,7 @@ main.o: main.cpp main_aux.h SPImageProc.h SPConfig.h SPLogger.h SPPoint.h SPBPri
 	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp -lm
 
 main_aux.o: main_aux.cpp main_aux.h SPImageProc.h SPConfig.h SPLogger.h SPPoint.h SPBPriorityQueue.h KDTree.h KDArray.h
-	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp -lm
+	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
 
 KNN_Search.o: KNN_Search.c KNN_Search.h
 	$(CC) $(C_COMP_FLAG) -c $*.c

@@ -1,3 +1,7 @@
+#ifndef MAIN_AUX_H
+#define MAIN_AUX_H
+
+
 #include "SPImageProc.h"
 
 #define C "-c"
@@ -21,12 +25,15 @@
 #define SRTCMP_ERROR "Strcmp Error!\n"
 #define WRONG_FORMAT_ERROR "file is not .config Error!\n"
 #define NULL_POINTER_ERROR "NULL pointer Error!\n"
+#define NOT_SUCCESS "MSG ERROR MAIN!" //TODO
+
+#define MAX_PATH_LENGTH 1024
 
 
 extern "C" {
 	#include <unistd.h>
 	#include <errno.h>
-	#include <SPLogger.h>
+	#include "SPLogger.h"
 	#include "SPConfig.h"
 	#include "KDTree.h"
 	#include "KDArray.h"
@@ -37,38 +44,38 @@ extern "C" {
 
 #define SEND_ERROR( fmt, to_format ) \
 do { \
-	printf(fmt, (to_format)); \
+	printf(fmt, to_format); \
 	ret = -1; /* the return value of the main fucntion :)*/ \
 	goto CLEANUP; \
-} while(0)
+} while(0);
 
 #define CHECK_RET(cond, to_format) \
 do { \
 	if (!(cond)) \
 		SEND_ERROR("%s" , to_format); \
-} while(0)
+} while(0);
 
 #define CHECK_NOT(cond, to_format) CHECK_RET(!(cond), to_format)
 
 #define MSG_NOT_SUCCESS(msg, error) \
 do { \
-	if (msg) \
+	if (!msg) \
 		SEND_ERROR("%s", error); \
-} while(0)
+} while(0);
 
 #define CHECK_MSG_RET(cond, msg , val_msg) \
 do { \
 	if(!(cond)) \
 	{ \
 		msg = val_msg; \
-		SEND_ERROR("",""); \
+		SEND_ERROR("%s",""); \
 	} \
-} while(0)
+} while(0);
 
 #define OPEN(fstream, path, prem, msg, msg_val) \
 do { \
-	CHECK_MSG_RET(fstream = fopen(path, prem), msg, val_msg); \
-} while(0)
+	CHECK_MSG_RET(fstream = fopen(path, prem), msg, msg_val); \
+} while(0);
 
 #define READ(fstream, buffer, size, nitem, msg, val_msg) \
 do { \
@@ -78,7 +85,7 @@ do { \
 #define WRITE(fstream, buffer, size, nitem, msg, val_msg) \
 do { \
 	CHECK_MSG_RET(fwrite(buffer, size, nitem, fstream) < (size_t)nitem, msg, val_msg); \
-} while(0)
+} while(0);
 
 int get_least_ms_dword(long qword);
 
@@ -99,3 +106,5 @@ int _mine_cmp(const void* a, const void *b);
 void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc);
 
 void ShowNonMinimalResult(char* q_image_path, int* pic_indexes, char* prefix, char* suffix, char* dir, int size);
+
+#endif

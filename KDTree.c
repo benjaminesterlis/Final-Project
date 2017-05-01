@@ -47,7 +47,6 @@ int KDTreeInit (KDArray* arr, KDTreeNode** root,
 {
 	int split_dim;
 	int size;
-	int i;
 	int check;
 	KDArray** total;
     double med_val;

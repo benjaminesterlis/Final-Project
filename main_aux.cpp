@@ -1,5 +1,5 @@
 #include "main_aux.h"
-
+#include "KNN_Search.h"
 
 int get_least_ms_dword(long qword)
 {	
@@ -41,38 +41,34 @@ int extraction_mode(const SPConfig conf, sp::ImageProc proc)
 	SP_CONFIG_MSG msg;
 	int ret = 0;
 	int num_of_images;
-	char* file_name = NULL;
-	char* prefix;
-	char* suffix;
-	char* dir;
+	char* suffix= NULL;
+	char* dir= NULL;
 	int num_of_features;
 	int i,j;
-	char* feature_path;
-	char* data;
+	char* feature_path= NULL;
+	char* data= NULL;
 	int size_data;
-	FILE* image_file;
-	SPPoint** features;
+	FILE* image_file= NULL;
+	SPPoint** features= NULL;
+	char img_path[MAX_PATH_LENGTH];
 
 	num_of_images = spConfigGetNumOfImages(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	num_of_features = spConfigGetNumOfFeatures(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
-
-	prefix = spGetImagePreffix(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	suffix = spGetImageSuffix(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	dir = spGetImageDirectory(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	// for each image will create .feat file
 	for(i = 0; i < num_of_images; i++)
 	{
 		// open image file & get features
-		sprintf(img_path, "%s%s%d%s",dir, suffix, i, prefix);
+		spConfigGetImagePath(img_path, conf, i);
 		features = proc.getImageFeatures(img_path, i, &num_of_features);
 		
 		// open feature file.
@@ -104,11 +100,10 @@ CLEANUP:
 int magic_func(SPPoint* p, char* buf)
 {
 	int dim = spPointGetDimension(p);
-	int index = spPointGetIndex(p);
 	int i;
 	int read;
 
-	for( printf(""),i = 0; i < dim; i++)
+	for(i = 0; i < dim; i++)
 		read = sprintf(buf, "%s%lf?",buf, spPointGetAxisCoor(p, i));
 
 	return read;
@@ -116,52 +111,61 @@ int magic_func(SPPoint* p, char* buf)
 
 SPPoint** read_features(const SPConfig conf, int index, int* num)
 {
+	int num_of_features;
 	int ret = 0;
 	int j;
-	int dim, index;
-	int num_of_images;
-	FILE* feature_file;
-	char* prefix;
-	char* dir;
-	char* path;
-	SPPoint** features;
+	int dim;
+	FILE* feature_file= NULL;
+	char* prefix= NULL;
+	char* dir= NULL;
+	char* path = NULL;
+	double* data= NULL;
+	SPPoint** features= NULL;
 	SP_CONFIG_MSG msg;
 
+
 	prefix = spGetImagePreffix(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	dir = spGetImageDirectory(conf, &msg);
-	MSG_NOT_SUCCESS(msg, SP_CONFIG_SUCCESS);
+	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	// create the path to the file to open
 	sprintf(path, "%s%s%d%s", dir, prefix, index, FEAT);
 
 	// open file
-	CHECK_RET( OPEN(feature_file, path, O_RDONLY ,msg , NULL), OPEN_ERROR);
+	OPEN(feature_file, path, O_RDONLY ,msg , SP_CONFIG_WRITE_FAILURE);
+	CHECK_RET(feature_file, OPEN_ERROR);
 
 	// first dword is num_of features
-	CHECK_RET(READ(feature_file, &num_of_features, sizeof(int), 1, msg, NULL), READ_ERROR);  
+	READ(feature_file, &num_of_features, sizeof(int), 1, msg, SP_CONFIG_WRITE_FAILURE); 
+	CHECK_RET(feature_file, READ_ERROR);
 	
 	// second dword is dim
-	CHECK_RET(READ(feature_file, &dim, sizeof(int), 1, msg, NULL), READ_ERROR);
+	READ(feature_file, &dim, sizeof(int), 1, msg, SP_CONFIG_WRITE_FAILURE);
+	CHECK_RET(feature_file, READ_ERROR);
 
 	// third dword is index
-	CHECK_RET(READ(feature_file, &index, sizeof(int), 1, msg, NULL), READ_ERROR);
+	READ(feature_file, &index, sizeof(int), 1, msg, SP_CONFIG_WRITE_FAILURE);
+	CHECK_RET(feature_file, READ_ERROR);	
 
 	// malloc featuers array
-	CHEK_RET(features = (SPPoint**)malloc(sizeof(SPPoint*) * num_of_features), MALLOC_ERROR);
+	CHECK_RET(features = (SPPoint**)malloc(sizeof(SPPoint*) * num_of_features), MALLOC_ERROR);
 
+	CHECK_RET(data = (double*) malloc(sizeof(double) * dim ), MALLOC_ERROR);
 
 	for ( j = 0; j < num_of_features; j++)
 	{
-		CHECK_RET(READ(feature_file, &data, sizeof(double), dim, msg, NULL), READ_ERROR);
-		faetures[j] = spPointCreate(data, dim, index);
-		*num++;
+		READ(feature_file, data, sizeof(double), dim, msg, SP_CONFIG_WRITE_FAILURE);
+		CHECK_RET(feature_file, READ_ERROR);
+
+		features[j] = spPointCreate(data, dim, index);
+		*num = *num+1;
 	}
 
 CLEANUP:
 	if (!feature_file)
-		close(feature_file);
+		fclose(feature_file);
 	if (ret == -1)
 		return NULL;
 	return features;
@@ -170,47 +174,47 @@ CLEANUP:
 
 int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size)
 {
-	int ret = 0;
 	int i;
-	SP_BPQUEUE_MSG msg;
-	BPQueueElement* elem;
+	BPQueueElement* elem= NULL;
+	int * indexes = NULL;
+	int ret=0;
 
 	CHECK_RET( indexes = (int*)malloc(sizeof(int) * size), MALLOC_ERROR);
 	
-	CHECK_RET(kNearestNeighbors(root, bpq, feature, size),"");
+	CHECK_RET(kNearestNeighbors(curr, bpq, feature, size),"");
 	for (i = 0; i < size; i++){
-		msg = spBPQueuePeek(bpq, elem);
+		spBPQueuePeek(bpq, elem);
 		indexes[i] = spBPQueueElementGetIndex(elem);
 	}
-
+	ret ++;
 CLEANUP:
-	return ret;
+	return indexes;
 }
 
 int _mine_cmp(const void* a, const void *b)
 {
-	int* aa;
-	int* bb;
-	*aa = (int)(*(long *) a >> 32);
-	*bb = (int)(*(long *) b >> 32);
-   	return ( *(int*)a - *(int*)b );
+	int aa;
+	int bb;
+	aa = (int)(*(long *) a >> 32);
+	bb = (int)(*(long *) b >> 32);
+   	return ( aa - bb );
 }
 
-void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc)
+void ShowMinimalResult( int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc)
 {
-	char* image_path;
+	char* image_path = NULL;
 	int i;
-	for( printf(""), i = 0; i < size, i++)
+	// sp::ImageProc imageProc = sp::ImageProc(conf);
+	for(i = 0; i < size; i++)
 	{
 		sprintf(image_path, "%s%s%d%s", dir, prefix, pic_indexes[i], suffix);
-		proc.ShowImage(image_path);
+		proc.showImage(image_path);
 	}
 }
 
 void ShowNonMinimalResult(char* q_image_path, int* pic_indexes, char* prefix, char* suffix, char* dir, int size)
 {
 	int i;
-	char* image_path;
 	
 	printf("%s\n", q_image_path);
 	for (i = 0; i < size; ++i)

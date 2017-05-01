@@ -1,3 +1,6 @@
+#ifndef KDARR_H
+#define KDARR_H
+
 #include "SPPoint.h"
 
 typedef struct sp_KDArray_t
@@ -52,3 +55,5 @@ SPPoint** GetKDArrayCopied_Arr(KDArray* arr);
  * read the function name and you will understand
  */
 int** GetKDArrayMat(KDArray* arr);
+
+#endif

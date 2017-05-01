@@ -9,10 +9,11 @@
  * A data-structure which is used for configuring the system.
  */
 
-typedef enum DKTreeSplitMethods_t {
-	MAX_SPRED,
+typedef enum sp_KDTreeSplitMethod_t
+{
+	MAX_SPREAD,
 	RANDOM,
-	INCREAMENTAL
+	INCREMENTAL,
 } SplitMethod;
 
 typedef enum sp_config_msg_t {
@@ -194,7 +195,7 @@ char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg);
 
 char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg);
 
-char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG* msg);
+char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg);
 
 int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg);
 

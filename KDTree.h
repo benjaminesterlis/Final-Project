@@ -1,3 +1,8 @@
+#ifndef KDTREE_H
+#define KDTREE_H
+
+
+#include "SPConfig.h"
 #include "KDArray.h"
 #include <time.h>
 
@@ -10,12 +15,7 @@ typedef struct sp_KDTreeNode_t{
 	SPPoint* data;
 } KDTreeNode;
 
-typedef enum sp_KDTreeSplitMethod_t
-{
-	MAX_SPREAD,
-	RANDOM,
-	INCREMENTAL
-} KDTreeSplitMethod;
+typedef SplitMethod KDTreeSplitMethod;
 
 
 int KDTreeInit (KDArray* arr, KDTreeNode** root, 
@@ -34,3 +34,5 @@ KDTreeNode* getKDTreeRight(KDTreeNode* node);
 SPPoint* getKDTreeData(KDTreeNode* node);
 
 void KDTreeNodeDestroy(KDTreeNode* node);
+
+#endif

@@ -174,7 +174,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	conf->spNumOfFeatures = 100;
 	conf->spExtractionMode = true;
 	conf->spNumOfSimilarImages = 1;
-	conf->spKDTreeSplitMethod = MAX_SPRED;
+	conf->spKDTreeSplitMethod = MAX_SPREAD;
 	conf->spKNN = 1;
 	conf->spMinimalGUI = false;
 	conf->spLoggerLevel = 3;
@@ -505,14 +505,14 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, co
 			conf->spKDTreeSplitMethod = RANDOM;	
 			return SP_CONFIG_SUCCESS;
 		}
-		if(strcmp(val, "MAX_SPRED") == 0)
+		if(strcmp(val, "MAX_SPREAD") == 0)
 		{
-			conf->spKDTreeSplitMethod = MAX_SPRED;
+			conf->spKDTreeSplitMethod = MAX_SPREAD;
 			return SP_CONFIG_SUCCESS;
 		}
-		if(strcmp(val,"INCREAMENTAL") == 0)
+		if(strcmp(val,"INCREMENTAL") == 0)
 		{
-			conf->spKDTreeSplitMethod = INCREAMENTAL;
+			conf->spKDTreeSplitMethod = INCREMENTAL;
 			return SP_CONFIG_SUCCESS;
 		}
 		return SP_CONFIG_INVALID_ENUM;
@@ -582,7 +582,7 @@ char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg)
 	return config->spImagesSuffix;
 }
 
-char* spGetImageDirectroy(const SPConfig config, SP_CONFIG_MSG* msg)
+char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
 	return config->spImagesDirectory;

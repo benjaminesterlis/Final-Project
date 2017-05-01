@@ -193,15 +193,15 @@ void KDArrayDestroy(KDArray* kdarr)
 KDArray** split(KDArray* kdarr, int coor)
 {
 	int Just4Free;
-	int mid = RND_HALF(kdarr->size);
+	// int mid = RND_HALF(kdarr->size);
 	int i, j;
 	int Place_At_Left_i;
 	int Place_At_Right_i;
-	int* perm_reverse;
-	int* perm;
-	KDArray* kdleft;
-	KDArray* kdright;
-	KDArray** total;
+	int* perm_reverse=NULL;
+	int* perm=NULL;
+	KDArray* kdleft=NULL;
+	KDArray* kdright=NULL;
+	KDArray** total=NULL;
 
 	if((perm = (int*)malloc(sizeof(int) * kdarr->size)) == NULL)
 		SEND_ERROR_SPLIT("Error, Allocation failure");
