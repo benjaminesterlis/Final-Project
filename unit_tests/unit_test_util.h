@@ -1,6 +1,10 @@
 #ifndef UNIT_TEST_UTIL_H_
 #define UNIT_TEST_UTIL_H_
 
+#include "../SPPoint.h"
+#include "../KDArray.h"
+#include "../KDTree.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,5 +39,10 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+int printSPPoint (SPPoint* p);
+int printKDArray(KDArray* arr);
+void printKDTree(KDTreeNode* arr, int side, int depth);
+void printMat(KDArray* kdarr);
 
 #endif /* UNIT_TEST_UTIL_H_ */
