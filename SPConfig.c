@@ -599,3 +599,9 @@ SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
 	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
 	return config->spKDTreeSplitMethod;
 }
+
+int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
+{
+	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
+	return config->spNumOfSimilarImages;
+}

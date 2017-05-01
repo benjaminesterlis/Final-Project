@@ -1,7 +1,7 @@
 CC = gcc
 CPP = g++
 
-OBJS = SPPoint.o SPBPriorityQueue.o SPLogger.o SPConfig.o KDArray.o KDTree.o SPImageProc.o main_aux.o main.o
+OBJS = SPPoint.o SPBPriorityQueue.o SPLogger.o SPConfig.o KDArray.o KDTree.o SPImageProc.o main_aux.o main.o KNN_Search.o
 
 #The executabel filename
 EXEC = SPCBIR
@@ -23,7 +23,7 @@ $(EXEC): $(OBJS)
 main.o: main.cpp main_aux.h SPImageProc.h SPConfig.h SPLogger.h SPPoint.h SPBPriorityQueue.h KDTree.h KDArray.h
 	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp -lm
 
-main_aux.o: main_aux.cpp main_aux.h SPImageProc.h SPConfig.h SPLogger.h SPPoint.h SPBPriorityQueue.h KDTree.h KDArray.h
+main_aux.o: main_aux.cpp main_aux.h SPImageProc.h SPConfig.h SPLogger.h SPPoint.h SPBPriorityQueue.h KDTree.h KDArray.h KNN_Search.h
 	$(CPP) $(CPP_COMP_FLAG) -I$(INCLUDEPATH) -c $*.cpp
 
 KNN_Search.o: KNN_Search.c KNN_Search.h

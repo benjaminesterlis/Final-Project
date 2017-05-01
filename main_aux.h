@@ -39,6 +39,7 @@ extern "C" {
 	#include "KDArray.h"
 	#include "SPPoint.h"
 	#include "SPBPriorityQueue.h"
+	#include "KNN_Search.h"
 }
 
 
