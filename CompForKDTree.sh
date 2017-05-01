@@ -9,6 +9,7 @@ if [[ $? -eq 0 ]]; then
 		valgrind --leak-check=full ./KDTreeTester
 	else
 	valgrind ./KDTreeTester
+
 	fi
 else
 ./KDTreeTester

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 #define LINE printf("~~~~~~~~~~~~~~~~~~~~ %d ~~~~~~~~~~~~~~~~~~~~\n", __LINE__);
 #define RND_HALF(num) ((num % 2 == 0) ? (num / 2) : (num / 2 + 1))
 
@@ -28,18 +29,7 @@ do { \
 	return 0; \
 } while(0)
 
-#define SEND_ERROR(error) { printf("Error!, line: %d, %s\n", __LINE__, error); return -1;}  
-
-void printMat(KDArray* kdarr)
-{
-	int i;
-	int j;
-	for (i = 0; i < kdarr->dim; i++){
-		for (j = 0; j < kdarr->size; j++)
-			printf("%d\t", kdarr->mat[i][j]);
-		printf("\n");
-	}
-}
+#define SEND_ERROR(error) { printf("Error!, line: %d, %s\n", __LINE__, error); return -1;} 
 
 
 int KDTreeInit (KDArray* arr, KDTreeNode** root, 
@@ -84,14 +74,12 @@ int KDTreeInit (KDArray* arr, KDTreeNode** root,
 			split_dim =  (upper_level_dim + 1) % GetKDArrayDim(arr);	
 	}
 
-
 	med_val = COOR_VAL_BY_ORDER(arr, arr->mat, split_dim, RND_HALF(size) - 1); 
 	// printf("%lf\n", med_val);
 	*med_val_pointer = med_val;
 	// printf("%lf\n", *med_val_pointer);
  
 	total = split(arr,split_dim);
-	
  	KD_S(check, total[0], &(*root)->left, split_method, upper_level_dim + 1, *root);	
  	KD_S(check, total[1], &(*root)->right, split_method, upper_level_dim + 1, *root);
  	// printf("%lf\n", *med_val_pointer);	

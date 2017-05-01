@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "../SPPoint.h"
 #include "../KDArray.h"
-#include "unit_test_util.h"
+#include "unit_test_util.h" 
 
 #define POINT_NUM 6
 #define DIM 5
@@ -22,47 +22,6 @@ do { \
 		spPointDestroy(arr[i]); \
 	free(arr); \
 } while(0)
-
-
-int printSPPoint (SPPoint* p)
-{
-	printf("******************** Start printf SPPoint ********************\n");
-	int i = 0;
-	if( p == NULL)
-		SEND_ERROR("pointer is null");
-	printf("point Dim: %d\n",spPointGetDimension(p));
-	printf("point index :%d\n", spPointGetIndex(p));
-	for (i = 1; i < spPointGetDimension(p) + 1; i++)
-		printf("coordinate no: %d value is: %f\n", i, spPointGetAxisCoor(p, i));
-
-	printf("******************** End printf SPPoint ********************\n");
-
-	return 0;
-}
-
-int printKDArray(KDArray* arr)
-{
-	printf("******************** Start printf kdarr ********************\n");
-	int i,j;
-	SPPoint* cer;
-
-	printf("Size is: %d\n", GetKDArraySize(arr));
-	printf("Dim is: %d\n", GetKDArrayDim(arr));
-	
-	for ( j = 0; j < arr->size; ++j){
-		printf("no. %d\n", j);
-		printSPPoint(arr->copied_arr[j]);
-	}
-	
-	for( i = 0; i < spPointGetDimension(arr->copied_arr[0]); i++){
-		for ( j = 0; j < arr->size ; ++j){
-			printf("%d\t", arr->mat[i][j]);
-		}
-		printf("\n");
-	}
-	printf("******************** End printf kdarr ********************\n");
-	return 1;
-}
 
 static bool KDArrayTest()
 {
