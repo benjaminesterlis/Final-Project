@@ -13,7 +13,7 @@ typedef enum sp_KDTreeSplitMethod_t
 {
 	MAX_SPREAD,
 	RANDOM,
-	INCREMENTAL,
+	INCREMENTAL
 } SplitMethod;
 
 typedef enum sp_config_msg_t {
@@ -33,7 +33,7 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_WRONG_FIELD_NAME,
 	SP_CONFIG_DOUBLE_USED_VAR,
 	SP_CONFIG_NULL_POINTER,
-	SP_CONFIG_WRITE_FAILURE,
+	SP_CONFIG_WRITE_FAILURE
 } SP_CONFIG_MSG;
 
 typedef struct sp_config_t* SPConfig;

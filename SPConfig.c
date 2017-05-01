@@ -9,56 +9,53 @@
 #endif
 
 #define SKIP_WHITESPACES  do { \
-		while(read == 32/*' '*/) \
+		while(read == 32/*' '*/ || read == 9/*'\t'*/ || read == 13/*'\r'*/) \
 			read = getc(fp); \
 	} while(0)
 
 #define SKIP_COMMENTS do { \
 		if ( read == '#'){ \
-			while ((read = getc(fp)) != EOL || read != EOF); \
-			if (read == EOF) \
-				break; \
-			continue; \
+			cont++; \
+			do { \
+				read = getc(fp); \
+			} while ( read != EOL && read != EOF); \
 		} \
-	} while(0)
+	} while(0);
 
-#define FREE(out_msg) do { \
-		spConfigDestroy(conf); \
-		fclose(fp); \
-		*msg = out_msg; \
-		return NULL; \
-	} while(0)
-
-#define CHANGE_CHECK do { \
-		for (i = 0; i < 14; i++) \
-		{ \
-			if ( i < 4 && corr_field_cell[i] == 0 ) \
-			{ \
-				free(val); \
-				printf("File:%s\nLine%d\nMessage:Parameter %s is not set", filename, line, must_param_name[i]); \
-				FREE(conf_error[i]); \
-			} \
-			if( corr_field_cell[i] > 1) \
-			{ \
-				free(val); \
-				FREE(conf_error[5]); \
-			} \
-		} \
-	} while(0)
-
-#define SET_MESSAGE_RET(msg, msg_val, ret) \
+#define SET_MESSAGE_RET(msg, msg_val, ret_val) \
 do { \
 	msg = msg_val; \
-	return ret; \
+	ret = ret_val; \
+	goto CLEANUP; \
 } while(0)
 
 #define CHECK(cond,func) \
 do { \
-	if(!cond) \
+	if(!(cond)) \
+	{ \
 		func; \
+		goto CLEANUP; \
+	} \
 } while(0)
 
-static SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, const char* filename, int line);
+#define CHECK_C(cond,func) \
+do { \
+	if(!(cond)) \
+	{ \
+		func; \
+		continue; \
+	} \
+	else { \
+		goto CLEANUP; \
+	} \
+} while(0)
+
+#define SET_MESSAGE_RETURN(msg, msg_val, ret_val) \
+do { \
+	msg = msg_val; \
+	return ret_val; \
+} while(0)
+
 
 #define O_RONLY "r"
 #define	SP_DIR "spImagesDirectory"
@@ -75,15 +72,18 @@ static SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, in
 #define	SP_MGUI "spMinimalGUI"
 #define	SP_LL "spLoggerLevel"
 #define	SP_LF "spLoggerFilename"
+#define MAX_LEN 1024
+
+static SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX_LEN], int n, const char* filename, int line, int corr_field_cell[14]);
 
 struct sp_config_t
 {
-	char *spImagesDirectory;
-	char *spImagesPrefix;
-	char *spImagesSuffix;
+	char spImagesDirectory[MAX_LEN];
+	char spImagesPrefix[MAX_LEN];
+	char spImagesSuffix[MAX_LEN];
 	int spNumOfImages;
 	int spPCADimension;
-	char *spPCAFilename;
+	char spPCAFilename[MAX_LEN];
 	int spNumOfFeatures;
 	bool spExtractionMode;
 	int spNumOfSimilarImages;
@@ -91,18 +91,9 @@ struct sp_config_t
 	int spKNN;
 	bool spMinimalGUI; 
 	int spLoggerLevel;
-	char *spLoggerFilename;
+	char spLoggerFilename[MAX_LEN];
 };
 
-/**
- * cell 0 for spImagesPrefix
- * cell 1 for spImagesSuffix
- * cell 2 for spImagesDirectory
- * cell 3 for spLoggerFilename
- * cell 4 for spPCAFilename
- * need to free all items which thiers cells are true
- */
-bool sp_free[5] = {false, false, false, false, false};
 /**
  * - cell 0  for spImagesDirectory
  * - cell 1  for spImagesPrefix
@@ -112,25 +103,6 @@ bool sp_free[5] = {false, false, false, false, false};
  */
 char* must_param_name[4] = {SP_DIR, SP_PRE, SP_SUF, SP_NOI};
 
-/** 
- * - cell 0  for spImagesDirectory
- * - cell 1  for spImagesPrefix
- * - cell 2  for spImagesSuffix
- * - cell 3  for spNumOfImages
- * - cell 4 for spPCADimension
- * - cell 5 for spPCAFilename
- * - cell 6 for spNumOfFeatures
- * - cell 7 for spExtractionMode
- * - cell 8 for spNumOfSimilarImages
- * - cell 9 for spKDTreeSplitMethod
- * - cell 10 for spKNN
- * - cell 11 for spMinimalGUI
- * - cell 12 for spLoggerLevel
- * - cell 13 for spLoggerFilename
- * - cell value is 0 if not changed
- * - every time we changed each varilabe we increment the corresponded cell
- */
-int corr_field_cell[14]={0};
 /**
  * Fit SP_CONFIG_MSG error to his cell
  * We need the errors only of the first 4 variables beasue 
@@ -142,33 +114,43 @@ SP_CONFIG_MSG conf_error[5]={SP_CONFIG_MISSING_DIR, SP_CONFIG_MISSING_PREFIX,
 
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 {
-	SPConfig conf;
+	/** 
+	 * - cell 0  for spImagesDirectory
+	 * - cell 1  for spImagesPrefix
+	 * - cell 2  for spImagesSuffix
+	 * - cell 3  for spNumOfImages
+	 * - cell 4 for spPCADimension
+	 * - cell 5 for spPCAFilename
+	 * - cell 6 for spNumOfFeatures
+	 * - cell 7 for spExtractionMode
+	 * - cell 8 for spNumOfSimilarImages
+	 * - cell 9 for spKDTreeSplitMethod
+	 * - cell 10 for spKNN
+	 * - cell 11 for spMinimalGUI
+	 * - cell 12 for spLoggerLevel
+	 * - cell 13 for spLoggerFilename
+	 * - cell value is 0 if not changed
+	 * - every time we changed each varilabe we increment the corresponded cell
+	 */
+	int cont=0;
+	int corr_field_cell[14] = {0};
+	SPConfig ret = NULL;
+	SPConfig conf = NULL;
 	assert(msg != NULL);
 	int line = 0;
-	FILE* fp;
+	FILE* fp = NULL;
 	int i = 0;
-	char var[200]; //beacuse variables names are no longer then 200 ;)
-	char* val = NULL;
+	char var[MAX_LEN] = {0}; //beacuse variables names are no longer then 200 ;)
+	char val[MAX_LEN] = {0};
 	char read;
-	SP_CONFIG_MSG* new_msg=NULL;
-	
-	if ( filename == NULL)
-	{
-		*msg = SP_CONFIG_INVALID_ARGUMENT;
-		return NULL;
-	}
+	SP_CONFIG_MSG* new_msg = NULL;
 
-	if (!(fp = fopen(filename, O_RONLY)))
-	{
-		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
-		return NULL;
-	}
-	
-	if((conf = (SPConfig)malloc(sizeof(SPConfig))) == NULL){
-		fclose(fp);
-		*msg = SP_CONFIG_ALLOC_FAIL;
-		return NULL;
-	}
+	*msg = SP_CONFIG_SUCCESS;
+
+	CHECK(filename, SET_MESSAGE_RET(*msg, SP_CONFIG_INVALID_ARGUMENT, NULL));
+	CHECK(fp = fopen(filename, O_RONLY), SET_MESSAGE_RET(*msg, SP_CONFIG_CANNOT_OPEN_FILE, NULL));
+	CHECK(conf = (SPConfig)malloc(sizeof(struct sp_config_t)), SET_MESSAGE_RET(*msg, SP_CONFIG_ALLOC_FAIL, NULL));
+	CHECK(new_msg = (SP_CONFIG_MSG*)malloc(sizeof(SP_CONFIG_MSG)), SET_MESSAGE_RET(*msg, SP_CONFIG_ALLOC_FAIL, NULL));
 
 	conf->spPCADimension = 20;
 	conf->spNumOfFeatures = 100;
@@ -178,98 +160,107 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	conf->spKNN = 1;
 	conf->spMinimalGUI = false;
 	conf->spLoggerLevel = 3;
-
-	if( (conf->spPCAFilename = (char*)malloc(strlen("pca.yml") * sizeof(char))) == NULL )
-		FREE(SP_CONFIG_ALLOC_FAIL);
-	
-	sp_free[4] = true;
 	strcpy( conf->spPCAFilename, "pca.yml");
-
-	if( (conf->spLoggerFilename = (char*)malloc(strlen("stdout") * sizeof(char))) == NULL )
-		FREE(SP_CONFIG_ALLOC_FAIL);
-
-	sp_free[3] = true;
 	strcpy(conf->spLoggerFilename, "stdout");
 
 	while ((read = getc(fp)) != EOF)
 	{
+		cont = 0;
+		i=0;
 		line++;//to see the line in case of error
-		// for empty lines
-		if(read == EOL)
+
+		SKIP_WHITESPACES;
+		
+		if(read == EOL) // for empty lines
 			continue;
 
 		// for comments
 		SKIP_COMMENTS;
 
+		if(cont)
+			continue;
+
 		SKIP_WHITESPACES;
 		// read till end of variable name 
-		while(read != 32/*' '*/ || read != 61/*'='*/ )
+		while(read != 32/*' '*/ && read != 61/*'='*/ && read != 9/*'\t'*/ && read != 13/*'\r'*/)
 		{
-			if ((97/*'A'*/ < read && read < 122/*'Z'*/ )|| (65/*'a'*/ < read && read < 90/*'z'*/))//only alphabet's chars
+			if ((97/*'A'*/ <= read && read <= 122/*'Z'*/ )|| (65/*'a'*/ <= read && read <= 90/*'z'*/))//only alphabet's chars
 			{
-				var[i] = read;
+				var[i] = (char)read;
 				i++;
 				read = getc(fp);
 			}
 			else
 			{
-				printf("File:%s\nLine%d\nMessage:Invalid configuration line", filename, line);
-				FREE(SP_CONFIG_INVALID_STRING);
+				printf("File:%s\nLine:%d\nMessage:Invalid configuration line\n", filename, line);
+				SET_MESSAGE_RET(*msg, SP_CONFIG_INVALID_STRING, NULL);
 			}
 		}
-
+		var[i] = 0 /* '\0' */;
 		SKIP_WHITESPACES;
 		//if there are whitespaces in varliabes name
 		if ( read != 61/*'='*/) 
 		{
-			printf("File:%s\nLine%d\nMessage:Invalid configuration line", filename, line);
-			FREE(SP_CONFIG_INVALID_STRING);
+			printf("File:%s\nLine:%d\nMessage:Invalid configuration line\n", filename, line);
+			SET_MESSAGE_RET(*msg, SP_CONFIG_INVALID_STRING, NULL);
 		}
-		
+		read = getc(fp);
 		SKIP_WHITESPACES;
 		i = 0;
 		//assumed cant be comments after a variable data
 		//b3cu453 f0ld3r/f1l3n4m3 c4n c0n741n # 1n 17
 		//#w3_4r3_1337 
 		//try to decrypt ;)
-		while (read != 32/*' '*/ || read != EOL || read != EOF)
+		while (read != 32/*' '*/ && read != 9/*'\t'*/ && read != 13/*'\r'*/ && read != EOL && read != EOF)
 		{
-			if((val = (char*)realloc(val, i + 1)) == NULL )
-				FREE(SP_CONFIG_ALLOC_FAIL);
-			val[i] = read;
+			val[i] = (char)read;
 			i++;
+			read = getc(fp);
 		}
 
-		if((val = (char*)realloc(val, i + 1)) == NULL )
-			FREE(SP_CONFIG_INVALID_STRING);
+		val[i] = 0 /* '\0' */;
 		
-		val[i] = 0/* '\0' */;
-
 		SKIP_WHITESPACES;
+
 		if(read == EOL || read == EOF)
 		{
-			*new_msg = add_field_to_struct(conf, var, val, i + 1, filename, line);
-			if (*new_msg != SP_CONFIG_SUCCESS){
-				free(val);
-				spConfigDestroy(conf);
-				fclose(fp);
-				msg = new_msg;
-				return NULL;
-			}
+			*new_msg = add_field_to_struct(conf, var, val, i + 1, filename, line, corr_field_cell);
+			*msg = *new_msg;
+			CHECK_C(*new_msg != SP_CONFIG_SUCCESS, i++);
 		}
 		else
 		{
-			printf("File:%s\nLine%d\nMessage:Invalid configuration line", filename, line);
-			free(val);
-			FREE(SP_CONFIG_INVALID_STRING);
+			printf("File:%s\nLine:%d\nMessage:Invalid configuration line\n", filename, line);
+			goto CLEANUP;
 		}
 	}	
 
-	// for error SP_CONFIG_DOULBE_USED_VAR & any SP_CONFIG in the conf_error 
-	CHANGE_CHECK;
-	
-	return conf;
+	//In case we succed to make a confing.
+	ret = conf;
+	//tp check if we insert one object twice.
+	for (i = 0; i < 14; i++)
+	{
+		if (i <= 4 && corr_field_cell[i] == 0)
+		{
+			*msg=conf_error[i];
+			goto CLEANUP;
+		}
+		if(corr_field_cell[i] > 1)
+		{
+			*msg=SP_CONFIG_DOUBLE_USED_VAR;
+			goto CLEANUP;
+		}
+	} 
+	if (fp != NULL)
+		fclose(fp);
+	return ret;
 
+CLEANUP:
+	if (fp != NULL)
+		fclose(fp);
+	if (conf != NULL)
+		free(conf);;
+	return ret;
 }
 
 bool spConfigIsExtractionMode(const SPConfig conf, SP_CONFIG_MSG* msg)
@@ -363,16 +354,9 @@ void spConfigDestroy(SPConfig config)
 {
 	if (config == NULL)
 		return;
-	if(sp_free[0])
-		free(config->spImagesPrefix);
-	if(sp_free[1])
-		free(config->spImagesSuffix);
-	if(sp_free[2])
-		free(config->spImagesDirectory);
-	if(sp_free[3])
-		free(config->spLoggerFilename);
-	if(sp_free[4])
-		free(config->spPCAFilename);
+	free(config->spImagesPrefix);
+	free(config->spImagesSuffix);
+	free(config->spImagesDirectory);	
 	free(config);
 }
 
@@ -389,7 +373,7 @@ void spConfigDestroy(SPConfig config)
  * - SP_CONDIF_SUCCEES - otherwise
  */
 static
-SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, const char* filename, int line)
+SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX_LEN], int n, const char* filename, int line, int corr_field_cell[14])
 {	
 	char *temp;
 	if(val == NULL || var == NULL)
@@ -399,9 +383,6 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, co
 	if(strcmp(SP_DIR,var) == 0)
 	{	
 		corr_field_cell[0]++;
-		if((conf->spImagesDirectory = realloc(conf->spImagesDirectory,n)) == NULL )
-			return SP_CONFIG_ALLOC_FAIL;
-		sp_free[2] = true;
 		strncpy(conf->spImagesDirectory ,val, n);
 		return SP_CONFIG_SUCCESS;
 	}
@@ -410,21 +391,15 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, co
 	if(strcmp(SP_SUF,var) == 0 )
 	{
 		corr_field_cell[2]++;
-		if((conf->spImagesSuffix = realloc(conf->spImagesSuffix,n)) == NULL )
-			return SP_CONFIG_ALLOC_FAIL;
-		sp_free[1] = true;
-		conf->spImagesSuffix = val;
+		strncpy(conf->spImagesSuffix ,val, n);
 		return SP_CONFIG_SUCCESS;
 	}
 
 	// spImagesPrefix
-	if(strcmp(SP_PRE,var) == 0 )
+	if(strcmp(SP_PRE,var) == 0)
 	{
 		corr_field_cell[1]++;
-		if((conf->spImagesPrefix = realloc(conf->spImagesPrefix,n)) == NULL )
-			return SP_CONFIG_ALLOC_FAIL;
-		sp_free[0] = true;
-		conf->spImagesPrefix = val;
+		strncpy(conf->spImagesPrefix ,val, n);	
 		return SP_CONFIG_SUCCESS;
 	}
 	
@@ -452,14 +427,9 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, co
 	if(strcmp(SP_PCAF,var) == 0 )
 	{
 		corr_field_cell[5]++;
-		if((conf->spPCAFilename = (char*)realloc(conf->spPCAFilename, 
-									sizeof(val)*sizeof(char))) == NULL )
-			return SP_CONFIG_ALLOC_FAIL;
-		sp_free[4] = true;
-		conf->spPCAFilename = val;
+		strcpy(conf->spPCAFilename, val);
 		return SP_CONFIG_SUCCESS;
 	}
-
 	// spNumOfFeatures
 	if(strcmp(SP_NOF,var) == 0 )
 	{
@@ -474,7 +444,7 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, co
 	{
 		corr_field_cell[7]++;
 		if (strcmp(val,"true") == 0)
-		{
+		{ 
 			conf->spExtractionMode = true;
 			return SP_CONFIG_SUCCESS;
 		}
@@ -559,49 +529,58 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char* var, char* val, int n, co
 	if(strcmp(SP_LF,var) == 0 )
 	{
 		corr_field_cell[13]++;
-		if((conf->spLoggerFilename = (char*)realloc(conf->spLoggerFilename, 
-								sizeof(val)*sizeof(char))) == NULL )
-			return SP_CONFIG_ALLOC_FAIL;
-		sp_free[4] = true;
+		strcpy(conf->spLoggerFilename, val);
 		return SP_CONFIG_SUCCESS;
 	}
-	printf("File:%s\nLine%d\nInvalid value-constraint not met", filename, line);
+	printf("File:%s\nLine:%d\nInvalid value-constraint not met\n", filename, line);
 	return SP_CONFIG_WRONG_FIELD_NAME;
 }
 
 char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
+	char* ret = NULL;
+	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
+CLEANUP:
 	return config->spImagesPrefix;
 }
 
 
 char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
+	char* ret = NULL;
+	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
+CLEANUP:
 	return config->spImagesSuffix;
 }
 
 char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, NULL));
+	char* ret = NULL;
+	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
+CLEANUP:
 	return config->spImagesDirectory;
 }
 
 int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
+	int ret = 0;
+	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
+CLEANUP:
 	return config->spKNN;
 }
 
 SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
+	SplitMethod ret = 0;
+	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
+CLEANUP:
 	return config->spKDTreeSplitMethod;
 }
 
 int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	CHECK(config, SET_MESSAGE_RET(*msg, SP_CONFIG_NULL_POINTER, -1));
+	int ret = 0;
+	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
+CLEANUP:
 	return config->spNumOfSimilarImages;
 }
