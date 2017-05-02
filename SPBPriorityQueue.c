@@ -362,3 +362,4 @@ int spBPQueueElementGetIndex (BPQueueElement *elem)
 	}
 	return elem->index;
 }
+

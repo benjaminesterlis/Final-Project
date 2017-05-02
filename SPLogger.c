@@ -131,3 +131,4 @@ void spLoggerDestroy() {
 	free(logger); // free allocation
 	logger = NULL;
 }
+
