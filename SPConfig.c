@@ -543,8 +543,9 @@ char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg)
 	char* ret;
     ret = NULL;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
-CLEANUP:
 	return config->spImagesPrefix;
+CLEANUP:
+	return ret;
 }
 
 
@@ -553,8 +554,9 @@ char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg)
 	char* ret;
     ret = NULL;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
-CLEANUP:
 	return config->spImagesSuffix;
+CLEANUP:
+	return ret;
 }
 
 char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg)
@@ -562,8 +564,9 @@ char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg)
 	char* ret;
     ret = NULL;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
-CLEANUP:
 	return config->spImagesDirectory;
+CLEANUP:
+	return  ret;
 }
 
 int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg)
@@ -571,8 +574,9 @@ int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg)
 	int ret;
     ret = 0;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
-CLEANUP:
 	return config->spKNN;
+CLEANUP:
+	return ret;
 }
 
 SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
@@ -580,8 +584,9 @@ SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
 	SplitMethod ret;
     ret = 0;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
-CLEANUP:
 	return config->spKDTreeSplitMethod;
+CLEANUP:
+	return ret;
 }
 
 int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
@@ -589,6 +594,7 @@ int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
 	int ret;
     ret = 0;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
-CLEANUP:
 	return config->spNumOfSimilarImages;
+CLEANUP:
+	return ret;
 }
