@@ -233,33 +233,35 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 			printf("File:%s\nLine:%d\nMessage:Invalid configuration line\n", filename, line);
 			goto CLEANUP;
 		}
-	}	
+    }
 
-	//In case we succed to make a confing.
-	ret = conf;
-	//tp check if we insert one object twice.
-	for (i = 0; i < 14; i++)
+    //tp check if we insert one object twice.
+    for (i = 0; i < 14; i++)
 	{
-		if (i <= 4 && corr_field_cell[i] == 0)
+        if (i <= 4 && corr_field_cell[i] == 0)
 		{
-			*msg=conf_error[i];
-			goto CLEANUP;
-		}
-		if(corr_field_cell[i] > 1)
+            *msg=conf_error[i];
+            goto CLEANUP;
+        }
+        if(corr_field_cell[i] > 1)
 		{
-			*msg=SP_CONFIG_DOUBLE_USED_VAR;
-			goto CLEANUP;
-		}
-	} 
-	if (fp != NULL)
-		fclose(fp);
-	return ret;
+            *msg=SP_CONFIG_DOUBLE_USED_VAR;
+            goto CLEANUP;
+        }
+    }
+    //In case we succed to make a confing.
+    ret = conf;
 
-CLEANUP:
+    if (fp != NULL) {
+        fclose(fp);
+    }
+    return ret;
+
+	CLEANUP:
 	if (fp != NULL)
 		fclose(fp);
 	if (conf != NULL)
-		free(conf);;
+		free(conf);
 	return ret;
 }
 
@@ -538,7 +540,8 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX
 
 char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	char* ret = NULL;
+	char* ret;
+    ret = NULL;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
 CLEANUP:
 	return config->spImagesPrefix;
@@ -547,7 +550,8 @@ CLEANUP:
 
 char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	char* ret = NULL;
+	char* ret;
+    ret = NULL;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
 CLEANUP:
 	return config->spImagesSuffix;
@@ -555,7 +559,8 @@ CLEANUP:
 
 char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	char* ret = NULL;
+	char* ret;
+    ret = NULL;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
 CLEANUP:
 	return config->spImagesDirectory;
@@ -563,7 +568,8 @@ CLEANUP:
 
 int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	int ret = 0;
+	int ret;
+    ret = 0;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
 CLEANUP:
 	return config->spKNN;
@@ -571,7 +577,8 @@ CLEANUP:
 
 SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	SplitMethod ret = 0;
+	SplitMethod ret;
+    ret = 0;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
 CLEANUP:
 	return config->spKDTreeSplitMethod;
@@ -579,7 +586,8 @@ CLEANUP:
 
 int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
 {
-	int ret = 0;
+	int ret;
+    ret = 0;
 	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
 CLEANUP:
 	return config->spNumOfSimilarImages;
