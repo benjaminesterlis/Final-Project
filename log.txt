@@ -1,4 +1,4 @@
-tomersamara # Mon May  1 09:54:02 IDT 2017
+tomersamara # Wed May  3 11:49:27 IDT 2017
 In file included from main_aux.cpp:1:0:
 main_aux.cpp: In function 'int* best_indexes(SPPoint*, KDTreeNode*, SPBPQueue*, int)':
 main_aux.cpp:184:54: error: cannot convert 'SPBPQueue* {aka sp_bp_queue_t*}' to 'SPBPQueue** {aka sp_bp_queue_t**}' for argument '2' to 'int kNearestNeighbors(KDTreeNode*, SPBPQueue**, SPPoint*, int)'

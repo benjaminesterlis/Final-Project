@@ -52,3 +52,4 @@ SPImageProc.o: SPImageProc.cpp SPImageProc.h SPConfig.h SPPoint.h SPLogger.h
 
 clean:
 	rm -f $(OBJS) $(EXEC)
+

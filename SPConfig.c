@@ -56,6 +56,11 @@ do { \
 	return ret_val; \
 } while(0)
 
+#define SET_MESSAGE_CLEAN(msg, msg_val) \
+do{ \
+	*(msg) = msg_val; \
+	goto CLEANUP; \
+} while(0)
 
 #define O_RONLY "r"
 #define	SP_DIR "spImagesDirectory"
@@ -132,8 +137,8 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	 * - cell value is 0 if not changed
 	 * - every time we changed each varilabe we increment the corresponded cell
 	 */
-	int cont=0;
 	int corr_field_cell[14] = {0};
+	int cont = 0;
 	SPConfig ret = NULL;
 	SPConfig conf = NULL;
 	assert(msg != NULL);
@@ -221,7 +226,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 		val[i] = 0 /* '\0' */;
 		
 		SKIP_WHITESPACES;
-
+		SKIP_COMMENTS;
 		if(read == EOL || read == EOF)
 		{
 			*new_msg = add_field_to_struct(conf, var, val, i + 1, filename, line, corr_field_cell);
@@ -238,30 +243,29 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
     //tp check if we insert one object twice.
     for (i = 0; i < 14; i++)
 	{
-        if (i <= 4 && corr_field_cell[i] == 0)
-		{
-            *msg=conf_error[i];
-            goto CLEANUP;
-        }
+        if (i < 4 && corr_field_cell[i] == 0)
+        	SET_MESSAGE_CLEAN(msg, conf_error[i]);
         if(corr_field_cell[i] > 1)
-		{
-            *msg=SP_CONFIG_DOUBLE_USED_VAR;
-            goto CLEANUP;
-        }
+        	SET_MESSAGE_CLEAN(msg, SP_CONFIG_DOUBLE_USED_VAR);
     }
+
     //In case we succed to make a confing.
     ret = conf;
 
     if (fp != NULL) {
         fclose(fp);
     }
+	if (new_msg != NULL)
+		free(new_msg);
     return ret;
 
-	CLEANUP:
+CLEANUP:
 	if (fp != NULL)
 		fclose(fp);
 	if (conf != NULL)
 		free(conf);
+	if (new_msg != NULL)
+		free(new_msg);
 	return ret;
 }
 
@@ -356,9 +360,6 @@ void spConfigDestroy(SPConfig config)
 {
 	if (config == NULL)
 		return;
-	free(config->spImagesPrefix);
-	free(config->spImagesSuffix);
-	free(config->spImagesDirectory);	
 	free(config);
 }
 
@@ -389,6 +390,13 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX
 		return SP_CONFIG_SUCCESS;
 	}
 
+	// spImagesPrefix
+	if(strcmp(SP_PRE,var) == 0)
+	{
+		corr_field_cell[1]++;
+		strncpy(conf->spImagesPrefix ,val, n);	
+		return SP_CONFIG_SUCCESS;
+	}
 	// spImagesSuffix
 	if(strcmp(SP_SUF,var) == 0 )
 	{
@@ -397,13 +405,6 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX
 		return SP_CONFIG_SUCCESS;
 	}
 
-	// spImagesPrefix
-	if(strcmp(SP_PRE,var) == 0)
-	{
-		corr_field_cell[1]++;
-		strncpy(conf->spImagesPrefix ,val, n);	
-		return SP_CONFIG_SUCCESS;
-	}
 	
 	// spNumOfImages
 	if(strcmp(SP_NOI,var) == 0 )
@@ -538,7 +539,7 @@ SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX
 	return SP_CONFIG_WRONG_FIELD_NAME;
 }
 
-char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg)
+char* spGetImagePrefix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	char* ret;
     ret = NULL;
