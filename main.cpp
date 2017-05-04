@@ -1,4 +1,5 @@
 #include "main_aux.h"
+#define ESTERLIS printf("%d\n", __LINE__);
 
 using namespace sp;
 
@@ -10,7 +11,6 @@ int main(int argc, char const *argv[])
 	ImageProc* proc=NULL;
 	int* indexes = NULL;
 	const char* file_name = DEFUALT;
-	FILE* conf_file = NULL;
 	int ret = 0;
 	SP_CONFIG_MSG msg;
 	SPPoint*** features = NULL;
@@ -49,6 +49,7 @@ int main(int argc, char const *argv[])
 	/**********************INIT from  Config **********************/
 
 	conf = spConfigCreate(file_name, &msg);
+	ESTERLIS;
 	if (conf == NULL)
 	{
 		if (msg ==  SP_CONFIG_CANNOT_OPEN_FILE)
@@ -63,30 +64,28 @@ int main(int argc, char const *argv[])
 			}
 		}
 	}
-	fclose(conf_file);
-
 	KNN_feat = spGetImageKNN(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-	prefix=spGetImagePreffix(conf,&msg);
+	prefix=spGetImagePrefix(conf,&msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
 	suffix=spGetImageSuffix(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
 	dir= spGetImageDirectory(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-
+	ESTERLIS;
 	is_minimal = spConfigMinimalGui(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
 	K_close = spConfigNumOfSimilarImages(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
 	num_of_images = spConfigGetNumOfImages(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NULL_POINTER_ERROR);
-
+	ESTERLIS;
 	*proc = ImageProc(conf);
+	ESTERLIS;
 
 	// check if need to extact data to file
 	if (spConfigIsExtractionMode(conf, &msg))
 		CHECK_RET(extraction_mode(conf, *proc), EXTRACT_ERROR);
-
 	// craete SPPoints matrix each line for each image
 	CHECK_RET(features = (SPPoint***)malloc(sizeof(SPPoint**) * num_of_images), MALLOC_ERROR);
 
@@ -105,7 +104,7 @@ int main(int argc, char const *argv[])
 	CHECK_NOT(KDTreeInit(arr, root, spConfigGetSplitMethod(conf, &msg), 0), KDTREE_INIT_ERROR);
 
 	CHECK_RET(images_indexes = (int*)malloc(sizeof(int) * num_of_images), MALLOC_ERROR);
-
+	ESTERLIS;
 	/***************************** QUERY MODE *****************************/
 	while (1)
 	{

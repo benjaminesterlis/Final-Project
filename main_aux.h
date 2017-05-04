@@ -10,7 +10,7 @@
 #define CONF_SIZE 7
 #define INVALID_COMMAND "invalid command line: use -c <config_filename>\n"
 #define INVALID_CONFIG "invlaid configuration file: %s couldn't be open\n"
-#define DEFUALT_CONFIG "The default configuration file %s couldn’t be open\n"
+#define DEFUALT_CONFIG "The default configuration file %s couldn't be open\n"
 #define FEAT ".feat"
 #define O_RDONLY "r"
 #define O_WRONLY "w"
@@ -60,7 +60,7 @@ do { \
 
 #define MSG_NOT_SUCCESS(msg, error) \
 do { \
-	if (!msg) \
+	if (msg != SP_CONFIG_SUCCESS) \
 		SEND_ERROR("%s", error); \
 } while(0);
 

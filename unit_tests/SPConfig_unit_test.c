@@ -5,6 +5,9 @@
 
 #define MAX_SIZE 1024
 
+
+#define LINE printf("%d\n", __LINE__);
+
 #define PRINT(cond, fmt, ERROR) do {\
 	printf(fmt "\n", ERROR); \
 	ASSERT_TRUE(cond); \
@@ -38,8 +41,33 @@ bool CHECK_ALL()
 	return true;
 }
 
+static
+bool Check_output()
+{
+	SP_CONFIG_MSG msg;
+	SPConfig conf;
+	char* file_name;
+	file_name = (char*)malloc(39); // sizeof(char) == 1
+	sprintf(file_name, "%s", "./SPConfig_test_files/pos_test_3.config");
+	conf = spConfigCreate(file_name, &msg);
+	ASSERT_TRUE(msg == SP_CONFIG_SUCCESS);
+	ASSERT_TRUE(0 == strcmp(conf->spImagesDirectory, "../photos/"));
+	ASSERT_TRUE(0 == strcmp(conf->spImagesPrefix, "img"));
+	ASSERT_TRUE(0 == strcmp(conf->spImagesSuffix, ".jpg"));
+	ASSERT_TRUE(10 == conf->spNumOfImages);
+	ASSERT_TRUE(true == conf->spMinimalGUI);
+	ASSERT_TRUE(0 == strcmp(conf->spPCAFilename, "pca.yml"));
+	ASSERT_TRUE(100 == conf->spNumOfFeatures);
+	ASSERT_TRUE(true == conf->spExtractionMode);
+	ASSERT_TRUE(5 == conf->spNumOfSimilarImages);
+	ASSERT_TRUE(0 == strcmp(conf->spLoggerFilename, "stdout"));
+	ASSERT_TRUE(20 == conf->spPCADimension);
+	return true;
+}
+
 int main(int argc, char const *argv[])
 {
 	RUN_TEST(CHECK_ALL);
+	RUN_TEST(Check_output);
 	return 0;
 }

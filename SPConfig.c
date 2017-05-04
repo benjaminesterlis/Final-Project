@@ -77,27 +77,10 @@ do{ \
 #define	SP_MGUI "spMinimalGUI"
 #define	SP_LL "spLoggerLevel"
 #define	SP_LF "spLoggerFilename"
-#define MAX_LEN 1024
 
 static SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX_LEN], int n, const char* filename, int line, int corr_field_cell[14]);
 
-struct sp_config_t
-{
-	char spImagesDirectory[MAX_LEN];
-	char spImagesPrefix[MAX_LEN];
-	char spImagesSuffix[MAX_LEN];
-	int spNumOfImages;
-	int spPCADimension;
-	char spPCAFilename[MAX_LEN];
-	int spNumOfFeatures;
-	bool spExtractionMode;
-	int spNumOfSimilarImages;
-	SplitMethod spKDTreeSplitMethod;
-	int spKNN;
-	bool spMinimalGUI; 
-	int spLoggerLevel;
-	char spLoggerFilename[MAX_LEN];
-};
+
 
 /**
  * - cell 0  for spImagesDirectory

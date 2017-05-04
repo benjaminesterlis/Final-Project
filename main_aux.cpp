@@ -124,7 +124,7 @@ SPPoint** read_features(const SPConfig conf, int index, int* num)
 	SP_CONFIG_MSG msg;
 
 
-	prefix = spGetImagePreffix(conf, &msg);
+	prefix = spGetImagePrefix(conf, &msg);
 	MSG_NOT_SUCCESS(msg, NOT_SUCCESS);
 
 	dir = spGetImageDirectory(conf, &msg);
@@ -181,7 +181,7 @@ int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size)
 
 	CHECK_RET( indexes = (int*)malloc(sizeof(int) * size), MALLOC_ERROR);
 	
-	CHECK_RET(kNearestNeighbors(curr, bpq, feature, size),"");
+	CHECK_RET(kNearestNeighbors(curr, &bpq, feature, size),"");
 	for (i = 0; i < size; i++){
 		spBPQueuePeek(bpq, elem);
 		indexes[i] = spBPQueueElementGetIndex(elem);

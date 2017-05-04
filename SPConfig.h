@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "SPLogger.h"
 
+#define MAX_LEN 1024
 /**
  * A data-structure which is used for configuring the system.
  */
@@ -35,6 +36,24 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_NULL_POINTER,
 	SP_CONFIG_WRITE_FAILURE
 } SP_CONFIG_MSG;
+
+struct sp_config_t
+{
+	char spImagesDirectory[MAX_LEN];
+	char spImagesPrefix[MAX_LEN];
+	char spImagesSuffix[MAX_LEN];
+	int spNumOfImages;
+	int spPCADimension;
+	char spPCAFilename[MAX_LEN];
+	int spNumOfFeatures;
+	bool spExtractionMode;
+	int spNumOfSimilarImages;
+	SplitMethod spKDTreeSplitMethod;
+	int spKNN;
+	bool spMinimalGUI; 
+	int spLoggerLevel;
+	char spLoggerFilename[MAX_LEN];
+};
 
 typedef struct sp_config_t* SPConfig;
 
@@ -191,7 +210,7 @@ void spConfigDestroy(SPConfig config);
 
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 
-char* spGetImagePreffix(const SPConfig config, SP_CONFIG_MSG* msg);
+char* spGetImagePrefix(const SPConfig config, SP_CONFIG_MSG* msg);
 
 char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg);
 
