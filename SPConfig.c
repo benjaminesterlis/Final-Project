@@ -148,7 +148,9 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg)
 	conf->spKNN = 1;
 	conf->spMinimalGUI = false;
 	conf->spLoggerLevel = 3;
-	strcpy( conf->spPCAFilename, "pca.yml");
+	memset(conf->spPCAFilename, 0, MAX_LEN);
+	memset(conf->spLoggerFilename, 0, MAX_LEN);
+	strcpy(conf->spPCAFilename, "pca.yml");
 	strcpy(conf->spLoggerFilename, "stdout");
 
 	while ((read = getc(fp)) != EOF)
@@ -581,4 +583,24 @@ int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
 	return config->spNumOfSimilarImages;
 CLEANUP:
 	return ret;
+}
+
+void spPrintConfig(const SPConfig config)
+{
+	if (config == NULL)
+		exit(-1);
+	printf("spImagesDirectory:__%s__\n",config->spImagesDirectory );
+	printf("spImagesPrefix:__%s__\n", config->spImagesPrefix);
+	printf("spImagesSuffix:__%s__\n", config->spImagesSuffix);
+	printf("spNumOfImages:__%d__\n", config->spNumOfImages);
+	printf("spPCADimension:__%d__\n", config->spPCADimension);
+	printf("spPCAFilename:__%s__\n", config->spPCAFilename);
+	printf("spNumOfFeatures:__%d__\n", config->spNumOfFeatures);
+	printf("spExtractionMode:__%d__\n", config->spExtractionMode);
+	printf("spNumOfSimilarImages:__%d__\n", config->spNumOfSimilarImages);
+	printf("spKDTreeSplitMethod:__%d__\n", config->spKDTreeSplitMethod);
+	printf("spKNN:__%d__\n", config->spKNN);
+	printf("spMinimalGUI:__%d__\n", config->spMinimalGUI);
+	printf("spLoggerLevel:__%d__\n", config->spLoggerLevel);
+	printf("spLoggerFilename:__%s__\n", config->spLoggerFilename);
 }

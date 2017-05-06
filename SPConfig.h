@@ -222,5 +222,7 @@ SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg);
 
 int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg);
 
+void spPrintConfig(const SPConfig config);
+
 #endif /* SPCONFIG_H_ */
 

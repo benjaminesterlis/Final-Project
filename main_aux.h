@@ -13,7 +13,7 @@
 #define DEFUALT_CONFIG "The default configuration file %s couldn't be open\n"
 #define FEAT ".feat"
 #define O_RDONLY "r"
-#define O_WRONLY "w"
+#define O_WRONLY_TRUNC "w"
 #define O_RDWR "r+"
 #define EXTRACT_ERROR "Extraction Error!\n"
 #define BUILD_ERROR "Build Data instrcution Error!\n"
@@ -25,8 +25,11 @@
 #define SRTCMP_ERROR "Strcmp Error!\n"
 #define WRONG_FORMAT_ERROR "file is not .config Error!\n"
 #define NULL_POINTER_ERROR "NULL pointer Error!\n"
-#define NOT_SUCCESS "MSG ERROR MAIN!" //TODO
-
+#define DIRECTORY_ERROR "spGetImageDirectory Error!\n"
+#define PREFIX_ERROR "spGetImagePrefix Error!\n"
+#define KNN_ERROR "KNN search Error!\n"
+#define SPBPQUEUE_ERROR "SPBPQueue Error!\n"
+#define PROC_ERROR "getImagesFeatures Error!\n"
 #define MAX_PATH_LENGTH 1024
 
 
@@ -75,17 +78,17 @@ do { \
 
 #define OPEN(fstream, path, prem, msg, msg_val) \
 do { \
-	CHECK_MSG_RET(fstream = fopen(path, prem), msg, msg_val); \
+	CHECK_MSG_RET((fstream = fopen(path, prem)) != NULL, msg, msg_val); \
 } while(0);
 
 #define READ(fstream, buffer, size, nitem, msg, val_msg) \
 do { \
-	CHECK_MSG_RET(fread(buffer, size, nitem, fstream), msg , val_msg); \
+	CHECK_MSG_RET(fread(buffer, size, nitem, fstream) , msg , val_msg); \
 } while(0);
 
 #define WRITE(fstream, buffer, size, nitem, msg, val_msg) \
 do { \
-	CHECK_MSG_RET(fwrite(buffer, size, nitem, fstream) < (size_t)nitem, msg, val_msg); \
+	CHECK_MSG_RET(fwrite(buffer, size, nitem, fstream) == (size_t)nitem, msg, val_msg); \
 } while(0);
 
 int get_least_ms_dword(long qword);
@@ -100,7 +103,7 @@ int magic_func(SPPoint* p, char* buf);
 
 SPPoint** read_features(const SPConfig conf, int index, int* num);
 
-int* best_indexes(SPPoint* feature, KDTreeNode* curr, SPBPQueue* bpq, int size);
+int* best_indexes(SPPoint* feature, KDTreeNode** curr, SPBPQueue* bpq, int size);
 
 int _mine_cmp(const void* a, const void *b);
 

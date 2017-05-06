@@ -179,7 +179,6 @@ static bool KDTreeIncrementalTest()
 	p = spPointCreate(data2, DIM, 99999);
 	ASSERT_TRUE(0 == kNearestNeighbors(root, &bpq, p, K_CLOSE));
 
-
 	for (i = 0; i < K_CLOSE; i++)
 	{
 		CHECK_RET(elem = (BPQueueElement*)malloc(sizeof(BPQueueElement)), MALLOC_ERROR);
