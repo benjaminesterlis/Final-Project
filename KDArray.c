@@ -84,36 +84,20 @@ do { \
 	SEND_ERROR_NULL(error); \
 } while(0);
 
-/*
- * need_To_Free_Split is an array which says what we need to free in the split method
- * cell 0 - kdleft pointer.
- * cell 1 - kdleft->copied_arr.
- * cell 2 - kdleft->mat.
- * cell 3 - how many rows in kdleft->mat to remove.
- * cell 4 - kdright pointer.
- * cell 5 - kdright->copied_arr.
- * cell 6 - kdright->mat.
- * cell 7 - how many rows in kdright->mat to remove.
- * cell 8 - how many points to free in kdleft->copied_arr.
- * cell 9 - how many points to free in kdright->copied_arr.
- * cell 10 - perm.
- * cell 11 - perm->reverse.
-*/ 
-int need_To_Free_Split[12] = {0};
 
-/*
- * This array will tell me if we need to free any memory we used
- * cell 0 - kdarr
- * cell 1 - kdarr->copied_arr (SPoint**)
- * cell 2 - how many SPPoints need to free in kdarr->copied_arr;
- * cell 3 - mat (int**)
- * cell 4 - how many of rows in in mat need to be freed (between 0 to d)
-*/
-int need_To_Free_Init[5] = {0};
 
 
 KDArray* Init(SPPoint** arr, int size)
 {
+	/*
+	 * This array will tell me if we need to free any memory we used
+	 * cell 0 - kdarr
+	 * cell 1 - kdarr->copied_arr (SPoint**)
+	 * cell 2 - how many SPPoints need to free in kdarr->copied_arr;
+	 * cell 3 - mat (int**)
+	 * cell 4 - how many of rows in in mat need to be freed (between 0 to d)
+	*/
+	int need_To_Free_Init[5] = {0};
 	KDArray* kdarr;
 	int Just4Free;	
 	int* Sorted_Coor_i;
@@ -192,6 +176,24 @@ void KDArrayDestroy(KDArray* kdarr)
 
 KDArray** split(KDArray* kdarr, int coor)
 {
+/*
+ * need_To_Free_Split is an array which says what we need to free in the split method
+ * cell 0 - kdleft pointer.
+ * cell 1 - kdleft->copied_arr.
+ * cell 2 - kdleft->mat.
+ * cell 3 - how many rows in kdleft->mat to remove.
+ * cell 4 - kdright pointer.
+ * cell 5 - kdright->copied_arr.
+ * cell 6 - kdright->mat.
+ * cell 7 - how many rows in kdright->mat to remove.
+ * cell 8 - how many points to free in kdleft->copied_arr.
+ * cell 9 - how many points to free in kdright->copied_arr.
+ * cell 10 - perm.
+ * cell 11 - perm->reverse.
+*/ 
+int need_To_Free_Split[12] = {0};
+
+
 	int Just4Free;
 	// int mid = RND_HALF(kdarr->size);
 	int i, j;

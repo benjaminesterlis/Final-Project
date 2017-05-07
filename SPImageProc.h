@@ -1,5 +1,6 @@
 #ifndef SPIMAGEPROC_H_
 #define SPIMAGEPROC_H_
+
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <vector>
@@ -7,6 +8,7 @@
 extern "C" {
 #include "SPConfig.h"
 #include "SPPoint.h"
+#include "SPLogger.h"
 }
 
 namespace sp {

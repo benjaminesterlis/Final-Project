@@ -36,7 +36,6 @@
 extern "C" {
 	#include <unistd.h>
 	#include <errno.h>
-	#include "SPLogger.h"
 	#include "SPConfig.h"
 	#include "KDTree.h"
 	#include "KDArray.h"
@@ -48,7 +47,7 @@ extern "C" {
 
 #define SEND_ERROR( fmt, to_format ) \
 do { \
-	printf(fmt, to_format); \
+	PrintToLogger(to_format, __FILE__, __func__, __LINE__ ); \
 	ret = -1; /* the return value of the main fucntion :)*/ \
 	goto CLEANUP; \
 } while(0);
@@ -93,9 +92,9 @@ do { \
 
 int get_least_ms_dword(long qword);
 
-long extend(int most_seg_dword, int least_seg_dword);
-
 int check_file_name(const char* file_name);
+
+uint64_t extend(uint32_t most_seg_dword, uint32_t least_seg_dword);
 
 int extraction_mode(const SPConfig conf, sp::ImageProc proc);
 
@@ -110,5 +109,10 @@ int _mine_cmp(const void* a, const void *b);
 void ShowMinimalResult(int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc);
 
 void ShowNonMinimalResult(char* q_image_path, int* pic_indexes, char* prefix, char* suffix, char* dir, int size);
+
+void printKDTree(KDTreeNode* arr, int side, int depth);
+
+void PrintToLogger(const char* message, const char* file,
+		const char* function, const int line);
 
 #endif

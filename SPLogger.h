@@ -1,5 +1,7 @@
 #ifndef SPLOGGER_H_
 #define SPLOGGER_H_
+
+#include <stdlib.h>
 /**
  * SP Logger summary:
  * SP Logger is defined at compilation time and it must be initialized
@@ -47,6 +49,7 @@ typedef enum sp_logger_msg_t {
 /** A type used for defining the logger**/
 typedef struct sp_logger_t* SPLogger;
 
+
 /**
  * Creates a logger. This function should be called once, prior
  * to the usage of any SP Logger print functions. It is the responsibility
@@ -69,7 +72,7 @@ SP_LOGGER_MSG spLoggerCreate(const char* filename, SP_LOGGER_LEVEL level);
  * then nothing happens.
  */
 void spLoggerDestroy();
-
+	
 /**
  * 	Prints error message. The error message format is given below:
  * 	---ERROR---
@@ -217,6 +220,10 @@ SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
 
 SP_LOGGER_MSG WRITE_FILE(const char *log_type, const char *file, 
 						const char *function, int line, const char *msg);
+
+SP_LOGGER_LEVEL SPGetLogggerLevel();
+
+int spLoggerIsDefined();
 
 #endif
 

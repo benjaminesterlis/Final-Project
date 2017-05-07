@@ -15,27 +15,23 @@
 #define LOG_FUNC "- function: "
 #define LOG_LINE "- line: "
 #define LOG_MSG "- message: "
-// Global variable holding the logger
-SPLogger logger = NULL;
 
 struct sp_logger_t {
 	FILE* outputChannel; //The logger file
 	bool isStdOut; //Indicates if the logger is stdout
 	SP_LOGGER_LEVEL level; //Indicates the level
 };
+	
+// Global variable holding the logger
+SPLogger logger = NULL;
 
 SP_LOGGER_MSG WRITE_FILE(const char *log_type, const char *file, const char *function, int line, const char *msg) 
 { 
-	if( fprintf(logger->outputChannel, "%s\n", log_type) < (int)strlen(log_type) + 1 )
-		return SP_LOGGER_WRITE_FAIL;
-	if( fprintf(logger->outputChannel, "%s%s\n", LOG_FILE, file) < (int)(strlen(LOG_FILE) + strlen(file) + 1) ) 
-		return SP_LOGGER_WRITE_FAIL; 
-	if( fprintf(logger->outputChannel, "%s%s\n", LOG_FUNC, function) < (int)(strlen(LOG_FUNC) + strlen(function) + 1) ) 
-		return SP_LOGGER_WRITE_FAIL; 
-	if( fprintf(logger->outputChannel, "%s%d\n", LOG_LINE, line) < (int)(strlen(LOG_LINE) + (int)log(line) + 1) ) 
-		return SP_LOGGER_WRITE_FAIL; 
-	if( fprintf(logger->outputChannel, "%s%s\n", LOG_MSG, msg) < (int)(strlen(LOG_MSG) + strlen(msg) + 1) )
- 		return SP_LOGGER_WRITE_FAIL;
+	fprintf(logger->outputChannel, "%s\n", log_type);
+	fprintf(logger->outputChannel, "%s%s\n", LOG_FILE, file);
+	fprintf(logger->outputChannel, "%s%s\n", LOG_FUNC, function);
+	fprintf(logger->outputChannel, "%s%d\n", LOG_LINE, line); 
+	fprintf(logger->outputChannel, "%s%s\n", LOG_MSG, msg);
 	return SP_LOGGER_SUCCESS;
 }
 
@@ -89,8 +85,9 @@ SP_LOGGER_MSG spLoggerPrintInfo(const char* msg)
 {
 	if(!logger)
 		return SP_LOGGER_UNDIFINED;
-	if (logger->level == SP_LOGGER_ERROR_LEVEL || logger->level == SP_LOGGER_WARNING_ERROR_LEVEL)
+	if (logger->level == SP_LOGGER_ERROR_LEVEL || logger->level == SP_LOGGER_WARNING_ERROR_LEVEL){
 		return SP_LOGGER_WRONG_LEVEL;
+	}
 	if( !msg || NULL != NULL /*overkill: Vigilance Test*/)
 		return SP_LOGGER_INVALID_ARGUMENT;
 	if( fprintf(logger->outputChannel, "%s\n", LOG_INFO) < (int)strlen(LOG_INFO) + 1 )
@@ -105,8 +102,9 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
 {
 	if( !logger)
 		return SP_LOGGER_UNDIFINED;
-	if (logger->level == SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL)
+	if (logger->level != SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL){
 		return SP_LOGGER_WRONG_LEVEL;
+	}
 	if( !msg || !function || !file || NULL != NULL /*overkill: Vigilance Test*/ || line < 0)
 		return SP_LOGGER_INVALID_ARGUMENT;
 	return WRITE_FILE(LOG_DEBUG, file , function , line, msg);
@@ -132,3 +130,14 @@ void spLoggerDestroy() {
 	logger = NULL;
 }
 
+int spLoggerIsDefined()
+{
+	if(!logger)
+		return 0;
+	return 1337;
+}
+
+SP_LOGGER_LEVEL SPGetLogggerLevel()
+{
+	return logger->level;
+}

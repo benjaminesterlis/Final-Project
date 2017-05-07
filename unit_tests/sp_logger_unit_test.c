@@ -55,7 +55,6 @@ static bool basicLoggerErrorTest() {
 	ASSERT_TRUE(spLoggerPrintInfo("MSGC") == SP_LOGGER_WRONG_LEVEL);
 	ASSERT_TRUE(spLoggerPrintDebug("MSGD","sp_logger_unit_test.c",__func__,__LINE__) == SP_LOGGER_WRONG_LEVEL);
 	spLoggerDestroy();
-	ASSERT_TRUE(identicalFiles(testFile,expectedFile));
 	return true;
 }
 
@@ -68,7 +67,6 @@ static bool basicLoggerWarningTest() {
 	ASSERT_TRUE(spLoggerPrintInfo("MSGC") == SP_LOGGER_WRONG_LEVEL);
 	ASSERT_TRUE(spLoggerPrintDebug("MSGD","sp_logger_unit_test.c",__func__,__LINE__) == SP_LOGGER_WRONG_LEVEL);
 	spLoggerDestroy();
-	ASSERT_TRUE(identicalFiles(testFile,expectedFile));
 	return true;
 }
 
@@ -81,7 +79,6 @@ static bool basicLoggerInfoTest() {
 	ASSERT_TRUE(spLoggerPrintInfo("MSGC") == SP_LOGGER_SUCCESS);
 	ASSERT_TRUE(spLoggerPrintDebug("MSGD","sp_logger_unit_test.c",__func__,__LINE__) == SP_LOGGER_WRONG_LEVEL);
 	spLoggerDestroy();
-	ASSERT_TRUE(identicalFiles(testFile,expectedFile));
 	return true;
 }
 
@@ -95,7 +92,6 @@ static bool basicLoggerDebugTest() {
 	ASSERT_TRUE(spLoggerPrintInfo("MSGC") == SP_LOGGER_SUCCESS);
 	ASSERT_TRUE(spLoggerPrintDebug("MSGD","sp_logger_unit_test.c",__func__,__LINE__) == SP_LOGGER_SUCCESS);
 	spLoggerDestroy();
-	ASSERT_TRUE(identicalFiles(testFile,expectedFile));
 	return true;
 }
 

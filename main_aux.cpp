@@ -1,5 +1,6 @@
 #include "main_aux.h"
 #include "KNN_Search.h"
+#include <stdint.h>
 
 
 #define NOT_SUCCESS(msg) { \
@@ -33,23 +34,6 @@
 		goto CLEANUP; \
 }
 
-#define ESTERLIS_DOES_NOTHING printf("yoyo %d\n", __LINE__);
-
-int get_least_ms_dword(long qword)
-{	
-	unsigned long mask = -1;
-	mask = (mask >> 32);
-	return (int)(qword & mask);
-}
-
-long extend(int most_seg_dword, int least_seg_dword)
-{
-	long l = (long)most_seg_dword;
-	l = l << 32;
-	l += least_seg_dword;
-	return l;
-}
-
 // the last letter must be .config which is 7
 // check if the type is .config type	
 int check_file_name(const char* file_name)
@@ -58,6 +42,29 @@ int check_file_name(const char* file_name)
 	if (strcmp(CONFIG, file_name + size - CONF_SIZE) == 0)
 		return 0;
 	return -1;
+}
+
+int get_least_ms_dword(long qword)
+{	
+	long mask = -1;
+	mask = (mask >> 32);
+	return (int)(qword & mask);
+}
+
+uint64_t extend(uint32_t most_seg_dword, uint32_t least_seg_dword)
+{
+	uint64_t l = most_seg_dword;
+	l = l << 32;
+	l += least_seg_dword;
+	return l;
+}
+
+int _mine_cmp(const void* a, const void *b)
+{
+	uint32_t aa = (uint32_t)(((*(uint64_t *)a) >> 32) & 0xffffffff);
+	uint32_t bb = (uint32_t)(((*(uint64_t *)b) >> 32) & 0xffffffff);
+   	// printf("a:%d\tb:%d\n", (int32_t)aa, (int32_t)bb);
+   	return (int)( (int64_t)bb - (int64_t)aa);
 }
 
 int extraction_mode(const SPConfig conf, sp::ImageProc proc)
@@ -89,9 +96,9 @@ int extraction_mode(const SPConfig conf, sp::ImageProc proc)
 	NOT_SUCCESS(msg);
 	dir = spGetImageDirectory(conf,&msg);
 	NOT_SUCCESS(msg);
-	
 	for (i = 0; i < num_of_image; i++)
 	{
+
 		feature_flag = 0;
 		sprintf(img_path, "%s%s%d%s", dir, prefix, i, suffix);
  		// open img file
@@ -110,19 +117,17 @@ int extraction_mode(const SPConfig conf, sp::ImageProc proc)
  		// assumed for every image all features got the same index and  dim.
  		CHECK_ONLY((fwrite((void*)&dim, sizeof(int), 1, feature_file) != 1), -1);
  		CHECK_ONLY((fwrite((void*)&index, sizeof(int), 1, feature_file) != 1), -1);
- 		
  		for (j = 0; j < num_of_features; j++)
  		{
  			//write the data in the file
  			for ( k = 0; k < dim; k++)
  			{
- 				coor_val = spPointGetAxisCoor(features[i], j);
+ 				coor_val = spPointGetAxisCoor(features[j], k);
  				CHECK_ONLY((fwrite((void*)&coor_val, sizeof(double), 1, feature_file) != 1), -1);
  			}
 		}
 		fclose(feature_file);
 		feature_flag = 1;
-		printf("Extract faeture no.%d\n", i);
 	}
 
 	CLEANUP:
@@ -167,7 +172,6 @@ SPPoint** read_features(const SPConfig conf, int index, int* num)
 	SPPoint** ret = NULL;
 	int ret_len = 0;
 	SP_CONFIG_MSG msg;
-
 	prefix = spGetImagePrefix(conf, &msg);
 	NOT_SUCCESS_NULL(msg);
 	dir = spGetImageDirectory(conf,&msg);
@@ -197,6 +201,8 @@ SPPoint** read_features(const SPConfig conf, int index, int* num)
 		CHECK_NULL(ret[i] = spPointCreate(data, dim, index));
 		ret_len++;	
 	}
+	if(data != NULL)
+		free(data);
 	return ret;
 	
 CLEANUP:
@@ -215,34 +221,24 @@ CLEANUP:
 int* best_indexes(SPPoint* feature, KDTreeNode** curr, SPBPQueue* bpq, int size)
 {
 	int i;
-	BPQueueElement* elem = NULL;
+	BPQueueElement elem;
 	int* indexes = NULL;
 	int ret = 0;
 	CHECK_RET( indexes = (int*)malloc(sizeof(int) * size), MALLOC_ERROR);
-	CHECK_RET(kNearestNeighbors((*curr), &bpq, feature, size),KNN_ERROR);
+	CHECK_RET( kNearestNeighbors((*curr), &bpq, feature, size),KNN_ERROR);
 	for (i = 0; i < size; i++){
-		spBPQueuePeek(bpq, elem);
-		indexes[i] = spBPQueueElementGetIndex(elem);
+		spBPQueuePeek(bpq, &elem);
+		indexes[i] = spBPQueueElementGetIndex(&elem);
 	}
-	ret ++;
+	ret++;
 CLEANUP:
 	return indexes;
 }
 
-int _mine_cmp(const void* a, const void *b)
-{
-	int aa;
-	int bb;
-	aa = (int)(*(long *) a >> 32);
-	bb = (int)(*(long *) b >> 32);
-   	return ( aa - bb );
-}
-
 void ShowMinimalResult( int* pic_indexes, char* prefix, char* suffix, char* dir, int size, sp::ImageProc proc)
 {
-	char* image_path = NULL;
+	char image_path[MAX_PATH_LENGTH];
 	int i;
-	// sp::ImageProc imageProc = sp::ImageProc(conf);
 	for(i = 0; i < size; i++)
 	{
 		sprintf(image_path, "%s%s%d%s", dir, prefix, pic_indexes[i], suffix);
@@ -254,7 +250,30 @@ void ShowNonMinimalResult(char* q_image_path, int* pic_indexes, char* prefix, ch
 {
 	int i;
 	
-	printf("%s\n", q_image_path);
+	printf("Best candidates for %s are:\n", q_image_path);
 	for (i = 0; i < size; ++i)
 		printf("%s%s%d%s\n", dir, prefix, pic_indexes[i], suffix );
+}
+
+void PrintToLogger(const char* message, const char* file,
+		const char* function, const int line)
+{
+	switch (SPGetLogggerLevel())
+	{
+		case SP_LOGGER_ERROR_LEVEL:
+			spLoggerPrintError(message, file, function, line);
+			break;
+		case SP_LOGGER_WARNING_ERROR_LEVEL:
+			spLoggerPrintWarning(message, file, function, line);
+			break;
+		case SP_LOGGER_INFO_WARNING_ERROR_LEVEL:
+			spLoggerPrintInfo(message);
+			break;
+		case SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL:
+			spLoggerPrintDebug(message, file, function, line);
+			break;
+		default:
+			spLoggerPrintMsg(message);
+			break;
+	}
 }

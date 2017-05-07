@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include "SPLogger.h"
 
 #define MAX_LEN 1024
 /**
@@ -223,6 +222,11 @@ SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg);
 int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg);
 
 void spPrintConfig(const SPConfig config);
+
+char* spConfigGetLoggerName(const SPConfig config, SP_CONFIG_MSG* msg);
+
+int spConfigGetLoggerLevel(const SPConfig config,SP_CONFIG_MSG* msg);
+
 
 #endif /* SPCONFIG_H_ */
 

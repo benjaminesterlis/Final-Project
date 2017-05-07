@@ -50,10 +50,10 @@ do { \
 	} \
 } while(0)
 
-#define SET_MESSAGE_RETURN(msg, msg_val, ret_val) \
+#define SET_MESSAGE_RETURN(msg, msg_val) \
 do { \
-	msg = msg_val; \
-	return ret_val; \
+	(*msg) = msg_val; \
+	goto CLEANUP; \
 } while(0)
 
 #define SET_MESSAGE_CLEAN(msg, msg_val) \
@@ -358,7 +358,7 @@ void spConfigDestroy(SPConfig config)
  * - SP_CONFIG_INVALID_BOOLEAN - in case type of var is boolean and val is not
  * - SP_CONFIG_INVLAID_ENUM - in case string is not one of enum
  * - SP_CONFIG_INVLAID_FIELD_NAME - in case ther is no field named $var
- * - SP_CONDIF_SUCCEES - otherwise
+ * - SP_CONFIG_SUCCEES - otherwise
  */
 static
 SP_CONFIG_MSG add_field_to_struct(SPConfig conf, char var[MAX_LEN], char val[MAX_LEN], int n, const char* filename, int line, int corr_field_cell[14])
@@ -528,18 +528,19 @@ char* spGetImagePrefix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	char* ret;
     ret = NULL;
-	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
+	CHECK(config, SET_MESSAGE_RETURN( msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;	
 	return config->spImagesPrefix;
 CLEANUP:
 	return ret;
 }
 
-
 char* spGetImageSuffix(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	char* ret;
     ret = NULL;
-	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
+	CHECK(config, SET_MESSAGE_RETURN(msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spImagesSuffix;
 CLEANUP:
 	return ret;
@@ -549,7 +550,8 @@ char* spGetImageDirectory(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	char* ret;
     ret = NULL;
-	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, NULL));
+	CHECK(config, SET_MESSAGE_RETURN( msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spImagesDirectory;
 CLEANUP:
 	return  ret;
@@ -559,7 +561,8 @@ int spGetImageKNN(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	int ret;
     ret = 0;
-	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RETURN(msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spKNN;
 CLEANUP:
 	return ret;
@@ -569,7 +572,8 @@ SplitMethod spConfigGetSplitMethod(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	SplitMethod ret;
     ret = 0;
-	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RETURN(msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spKDTreeSplitMethod;
 CLEANUP:
 	return ret;
@@ -579,8 +583,33 @@ int spConfigNumOfSimilarImages(const SPConfig config, SP_CONFIG_MSG* msg)
 {
 	int ret;
     ret = 0;
-	CHECK(config, SET_MESSAGE_RETURN(*msg, SP_CONFIG_NULL_POINTER, -1));
+	CHECK(config, SET_MESSAGE_RETURN(msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spNumOfSimilarImages;
+CLEANUP:
+	return ret;
+}
+
+char* spConfigGetLoggerName(const SPConfig config, SP_CONFIG_MSG* msg)
+{
+	char* ret;
+	ret = NULL;
+	CHECK(config, SET_MESSAGE_RETURN(msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
+	return config->spLoggerFilename;
+CLEANUP:
+	return ret;
+
+
+}
+
+int spConfigGetLoggerLevel(const SPConfig config,SP_CONFIG_MSG* msg)
+{
+	int ret;
+	ret = 0;
+	CHECK(config, SET_MESSAGE_RETURN(msg, SP_CONFIG_NULL_POINTER));
+	*msg = SP_CONFIG_SUCCESS;
+	return config->spLoggerLevel;
 CLEANUP:
 	return ret;
 }
